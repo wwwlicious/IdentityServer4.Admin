@@ -14,7 +14,7 @@
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
   </PropertyGroup>
-  <PropertyGroup  Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -118,7 +118,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Api\Controllers\ApiResourceController.cs" />
     <Compile Include="Api\Controllers\ClientController.cs" />
+    <Compile Include="Api\Controllers\IdentityResourceController.cs" />
     <Compile Include="Api\Controllers\MetaController.cs" />
     <Compile Include="Api\Controllers\AdminPageController.cs" />
     <Compile Include="Api\Controllers\ScopeController.cs" />
@@ -226,6 +228,10 @@
     <Content Include="Assets\Content\Bundle.css">
       <DependentUpon>Bundle.css.bundle</DependentUpon>
     </Content>
+    <Content Include="Assets\Scripts\App\ttidAdmApiResources.js" />
+    <Content Include="Assets\Scripts\App\ttidAdmIdentityResources.js" />
+    <EmbeddedResource Include="Assets\Templates\apiresources\list.html" />
+    <EmbeddedResource Include="Assets\Templates\identityresources\list.html" />
     <EmbeddedResource Include="Assets\Content\style.min.css">
       <DependentUpon>style.css</DependentUpon>
     </EmbeddedResource>
@@ -366,7 +372,9 @@
       <DependentUpon>style.css</DependentUpon>
     </None>
     <None Include="Assets\Content\style.less" />
-    <None Include="Assets\Scripts\Bundle.js.bundle" />
+    <None Include="Assets\Scripts\Bundle.js.bundle">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="bundleconfig.json" />
     <None Include="compilerconfig.json" />
     <None Include="compilerconfig.json.defaults">
@@ -385,6 +393,13 @@
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\packages\BuildBundlerMinifier.2.2.306\build\BuildBundlerMinifier.targets" Condition="Exists('..\packages\BuildBundlerMinifier.2.2.306\build\BuildBundlerMinifier.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\BuildBundlerMinifier.2.2.306\build\BuildBundlerMinifier.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\BuildBundlerMinifier.2.2.306\build\BuildBundlerMinifier.targets'))" />
+  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

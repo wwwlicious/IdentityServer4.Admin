@@ -49,7 +49,9 @@ namespace IdentityAdmin
         public const string RoutePrefix = "api";
         public const string MetadataRoutePrefix = RoutePrefix + "";
         public const string ScopeRoutePrefix = RoutePrefix + "/scopes";
-        public const string ClientsRoutePrefix = RoutePrefix + "/clients";  
+        public const string ClientsRoutePrefix = RoutePrefix + "/clients";
+        public const string IdentityResourcesRoutePrefix = RoutePrefix + "/identityresources";
+        public const string ApiResourcesRoutePrefix = RoutePrefix + "/apiresources";
 
         public class RouteNames
         {
@@ -87,6 +89,10 @@ namespace IdentityAdmin
             public const string AddScopeSecret = "AddScopeSecret";
             public const string RemoveScopeSecret = "RemoveScopeSecret";
             public const string UpdateScopeSecret = "UpdateScopeSecret";
+
+            public const string GetIdentityResources = "GetIdentityResources";
+
+            public const string GetApiResources = "GetApiResources";
 
             public const string Home = "Home";
             public const string Logout = "Logout";

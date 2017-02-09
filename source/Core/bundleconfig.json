@@ -14,6 +14,8 @@
       "Assets/Scripts/App/ttidAdmUI.js",
       "Assets/Scripts/App/ttidAdmClients.js",
       "Assets/Scripts/App/ttidAdmScopes.js",
+      "Assets/Scripts/App/ttidAdmIdentityResources.js",
+      "Assets/Scripts/App/ttidAdmApiResources.js",
       "Assets/Scripts/App/ttidAdmApp.js"
     ]
   },

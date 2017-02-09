@@ -3,7 +3,7 @@
 
 (function (angular) {
 
-    var app = angular.module("ttidAdmApp", ['ngRoute', 'ttidAdm', 'ttidAdmUI',  'ttidAdmClients', 'ttidAdmScopes']);
+    var app = angular.module("ttidAdmApp", ['ngRoute', 'ttidAdm', 'ttidAdmUI',  'ttidAdmClients', 'ttidAdmScopes', 'ttidAdmIdentityResources', 'ttidAdmApiResources']);
     function config(PathBase, $routeProvider) {
         $routeProvider
             .when("/home", {

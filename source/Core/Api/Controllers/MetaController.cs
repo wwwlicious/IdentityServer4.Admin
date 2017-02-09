@@ -81,6 +81,11 @@ namespace IdentityAdmin.Api.Controllers
             {
                 links["createScope"] = new CreateScopeLink(Url, coreMeta.ScopeMetaData);
             }
+
+            links["identityresources"] = Url.RelativeLink(Constants.RouteNames.GetIdentityResources);
+
+
+            links["apiresources"] = Url.RelativeLink(Constants.RouteNames.GetApiResources);
             
             return Ok(new
             {

@@ -319,6 +319,67 @@
     idAdmScopes.$inject = ["$http", "idAdmApi", "$log"];
     app.factory("idAdmScopes", idAdmScopes);
 
+    // identity resources
+    function idAdmIdentityResources($http, idAdmApi, $log) {
+        function nop() {
+        }
+
+        function mapResponseData(response) {
+            return response.data;
+        }
+
+        function errorHandler(msg) {
+            msg = msg || "Unexpected Error";
+            return function (response) {
+                if (response.data.exceptionMessage) {
+                    $log.error(response.data.exceptionMessage);
+                }
+                throw (response.data.errors || response.data.message || msg);
+            }
+        }
+
+        var svc = idAdmApi.get().then(function(api) {
+            svc.getIdentityResources = function (filter, start, count) {
+                return $http.get(api.links.identityresources, { params: { filter: filter, start: start, count: count } })
+                            .then(mapResponseData, errorHandler("Error Getting Identity Resources"));
+            };
+        });
+
+        return svc;
+    }
+    idAdmIdentityResources.$inject = ["$http", "idAdmApi", "$log"];
+    app.factory("idAdmIdentityResources", idAdmIdentityResources);
+
+    // api resources
+    function idAdmApiResources($http, idAdmApi, $log) {
+        function nop() {
+        }
+
+        function mapResponseData(response) {
+            return response.data;
+        }
+
+        function errorHandler(msg) {
+            msg = msg || "Unexpected Error";
+            return function (response) {
+                if (response.data.exceptionMessage) {
+                    $log.error(response.data.exceptionMessage);
+                }
+                throw (response.data.errors || response.data.message || msg);
+            }
+        }
+
+        var svc = idAdmApi.get().then(function (api) {
+            svc.getApiResources = function (filter, start, count) {
+                return $http.get(api.links.apiresources, { params: { filter: filter, start: start, count: count } })
+                            .then(mapResponseData, errorHandler("Error getting Api Resources"));
+            };
+        });
+        return svc;
+    }
+    idAdmApiResources.$inject = ["$http", "idAdmApi", "$log"];
+    app.factory("idAdmApiResources", idAdmApiResources);
+
 })(angular);
 
 (function (angular) {
