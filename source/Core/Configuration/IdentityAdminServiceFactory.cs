@@ -46,5 +46,9 @@ namespace IdentityAdmin.Configuration
         }
 
         public Registration<IIdentityAdminService> IdentityAdminService { get; set; }
+
+        public Registration<IIdentityResourceService> IdentityResourceService { get; set; }
+
+        public Registration<IApiResourceService> ApiResourceService { get; set; }
     }
 }

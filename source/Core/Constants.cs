@@ -91,8 +91,14 @@ namespace IdentityAdmin
             public const string UpdateScopeSecret = "UpdateScopeSecret";
 
             public const string GetIdentityResources = "GetIdentityResources";
+            public const string GetIdentityResource = "GetIdentityResource";
+            public const string CreateIdentityResource = "CreateIdentityResource";
+            public const string DeleteIdentityResource = "DeleteIdentityResource";
 
             public const string GetApiResources = "GetApiResources";
+            public const string GetApiResource = "GetApiResource";
+            public const string CreateApiResource = "CreateApiResource";
+            public const string DeleteApiResource = "DeleteApiResource";
 
             public const string Home = "Home";
             public const string Logout = "Logout";

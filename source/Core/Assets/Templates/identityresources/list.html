@@ -15,7 +15,7 @@
 </div>
 
 <div id="page-content">
-    <div class="panel panel-colorful panel-info" ng-hide="model.waiting || model.message || (model.scopes.length > 0)">
+    <div class="panel panel-colorful panel-info" ng-hide="model.waiting || model.message || (model.identityResources.length > 0)">
         <div class="panel-heading">
             <h3 class="panel-title">Info</h3>
         </div>
@@ -32,5 +32,40 @@
             <p>{{model.message}}</p>
         </div>
     </div>
+        
+    <div class="panel" ng-show="model.identityResources.length > 0">
+        <div class="panel-body">
+            <span ng-show="model.waiting" class="waiting alert alert-info">Searching...</span>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Name</th>
+                            <th>Subject</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="identityResource in model.identityResources">
+                            <td>
+                                <a ng-show="identityResource.links.detail" href="#/identityresources/edit/{{identityResource.data.subject}}" class="label label-table label-warning">edit</a>
+                            </td>
+                            <td>{{identityResource.data.name}}</td>
+                            <td>{{identityResource.data.subject}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
 
+            <div class="fixed-table-pagination" style="display: block;" ng-show="model.pager">
+                <div class="pull-left pagination-detail">
+                    <tt-pager-summary pager="model.pager"></tt-pager-summary>
+                </div>
+                <div class="pull-right pagination">
+                    <tt-pager-buttons pager="model.pager" path="identityresources"></tt-pager-buttons>
+                </div>
+            </div>
+        </div>
+    </div>
+    
 </div>

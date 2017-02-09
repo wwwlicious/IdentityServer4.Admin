@@ -15,7 +15,7 @@
 </div>
 
 <div id="page-content">
-    <div class="panel panel-colorful panel-info" ng-hide="model.waiting || model.message || (model.scopes.length > 0)">
+    <div class="panel panel-colorful panel-info" ng-hide="model.waiting || model.message || (model.apiResources.length > 0)">
         <div class="panel-heading">
             <h3 class="panel-title">Info</h3>
         </div>
@@ -32,4 +32,40 @@
             <p>{{model.message}}</p>
         </div>
     </div>
+    
+    <div class="panel" ng-show="model.apiResources.length > 0">
+        <div class="panel-body">
+            <span ng-show="model.waiting" class="waiting alert alert-info">Searching...</span>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Name</th>
+                            <th>Subject</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="apiResource in model.apiResources">
+                            <td>
+                                <a ng-show="apiResource.links.detail" href="#/apiresources/edit/{{apiResource.data.subject}}" class="label label-table label-warning">edit</a>
+                            </td>
+                            <td>{{apiResource.data.name}}</td>
+                            <td>{{apiResource.data.subject}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="fixed-table-pagination" style="display: block;" ng-show="model.pager">
+                <div class="pull-left pagination-detail">
+                    <tt-pager-summary pager="model.pager"></tt-pager-summary>
+                </div>
+                <div class="pull-right pagination">
+                    <tt-pager-buttons pager="model.pager" path="apiresources"></tt-pager-buttons>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>

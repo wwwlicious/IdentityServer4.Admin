@@ -5242,7 +5242,7 @@ angular.module("ui.bootstrap",["ui.bootstrap.tpls","ui.bootstrap.datepicker","ui
                 controller: 'ListIdentityResourcesCtrl',
                 resolve: { identityResources: "idAdmIdentityResources" },
                 templateUrl: PathBase + '/assets/Templates.identityresources.list.html'
-            });
+            })
         //.when("/scopes/create", {
         //    controller: 'NewScopeCtrl',
         //    resolve: {
@@ -5252,11 +5252,11 @@ angular.module("ui.bootstrap",["ui.bootstrap.tpls","ui.bootstrap.datepicker","ui
         //    },
         //    templateUrl: PathBase + '/assets/Templates.scopes.new.html'
         //})
-        //.when("/scopes/edit/:subject", {
-        //    controller: 'EditScopeCtrl',
-        //    resolve: { scopes: "idAdmScopes" },
-        //    templateUrl: PathBase + '/assets/Templates.scopes.edit.html'
-        //});
+            .when("/identityresources/edit/:subject", {
+                controller: 'EditIdentityResourceCtrl',
+                resolve: { identityResources: "idAdmIdentityResources" },
+                templateUrl: PathBase + '/assets/Templates.identityresources.edit.html'
+            });
     }
     config.$inject = ["$routeProvider", "PathBase"];
     app.config(config);
@@ -5332,7 +5332,7 @@ angular.module("ui.bootstrap",["ui.bootstrap.tpls","ui.bootstrap.datepicker","ui
     //NewScopeCtrl.$inject = ["$scope", "idAdmScopes", "api", "ttFeedback"];
     //app.controller("NewScopeCtrl", NewScopeCtrl);
 
-    //function EditScopeCtrl($scope, idAdmScopes, $routeParams, ttFeedback, $location) {
+    function EditIdentityResourceCtrl($scope, idAdmIdentityResources, $routeParams, ttFeedback, $location) {
     //    var feedback = new ttFeedback();
     //    $scope.feedback = feedback;
 
@@ -5472,9 +5472,9 @@ angular.module("ui.bootstrap",["ui.bootstrap.tpls","ui.bootstrap.datepicker","ui
     //            }, feedback.errorHandler);
     //    };
 
-    //}
-    //EditScopeCtrl.$inject = ["$scope", "idAdmScopes", "$routeParams", "ttFeedback", "$location"];
-    //app.controller("EditScopeCtrl", EditScopeCtrl);
+    }
+    EditIdentityResourceCtrl.$inject = ["$scope", "idAdmIdentityResources", "$routeParams", "ttFeedback", "$location"];
+    app.controller("EditIdentityResourceCtrl", EditIdentityResourceCtrl);
 
 })(angular);
 /// <reference path="../Libs/angular.min.js" />
@@ -5489,7 +5489,7 @@ angular.module("ui.bootstrap",["ui.bootstrap.tpls","ui.bootstrap.datepicker","ui
                 controller: 'ListApiResourcesCtrl',
                 resolve: { apiResources: "idAdmApiResources" },
                 templateUrl: PathBase + '/assets/Templates.apiresources.list.html'
-            });
+            })
             //.when("/scopes/create", {
             //    controller: 'NewScopeCtrl',
             //    resolve: {
@@ -5499,11 +5499,11 @@ angular.module("ui.bootstrap",["ui.bootstrap.tpls","ui.bootstrap.datepicker","ui
             //    },
             //    templateUrl: PathBase + '/assets/Templates.scopes.new.html'
             //})
-            //.when("/scopes/edit/:subject", {
-            //    controller: 'EditScopeCtrl',
-            //    resolve: { scopes: "idAdmScopes" },
-            //    templateUrl: PathBase + '/assets/Templates.scopes.edit.html'
-            //});
+            .when("/apiresources/edit/:subject", {
+                controller: 'EditApiResourceCtrl',
+                resolve: { apiResources: "idAdmApiResources" },
+                templateUrl: PathBase + '/assets/Templates.apiresources.edit.html'
+            });
     }
     config.$inject = ["$routeProvider", "PathBase"];
     app.config(config);
@@ -5579,7 +5579,7 @@ angular.module("ui.bootstrap",["ui.bootstrap.tpls","ui.bootstrap.datepicker","ui
     //NewScopeCtrl.$inject = ["$scope", "idAdmScopes", "api", "ttFeedback"];
     //app.controller("NewScopeCtrl", NewScopeCtrl);
 
-    //function EditScopeCtrl($scope, idAdmScopes, $routeParams, ttFeedback, $location) {
+    function EditApiResourceCtrl($scope, idAdmApiResources, $routeParams, ttFeedback, $location) {
     //    var feedback = new ttFeedback();
     //    $scope.feedback = feedback;
 
@@ -5719,9 +5719,9 @@ angular.module("ui.bootstrap",["ui.bootstrap.tpls","ui.bootstrap.datepicker","ui
     //            }, feedback.errorHandler);
     //    };
 
-    //}
-    //EditScopeCtrl.$inject = ["$scope", "idAdmScopes", "$routeParams", "ttFeedback", "$location"];
-    //app.controller("EditScopeCtrl", EditScopeCtrl);
+    }
+    EditApiResourceCtrl.$inject = ["$scope", "idAdmApiResources", "$routeParams", "ttFeedback", "$location"];
+    app.controller("EditApiResourceCtrl", EditApiResourceCtrl);
 
 })(angular);
 /// <reference path="../Libs/angular.min.js" />

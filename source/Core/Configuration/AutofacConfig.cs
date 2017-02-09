@@ -35,6 +35,8 @@ namespace IdentityAdmin.Configuration
 
             builder.RegisterInstance(config);
             builder.Register(config.Factory.IdentityAdminService);
+            builder.Register(config.Factory.IdentityResourceService);
+            builder.Register(config.Factory.ApiResourceService);
             builder.Register(c => new OwinEnvironmentService(c.Resolve<IOwinContext>()));
             builder.RegisterApiControllers(typeof(AutofacConfig).Assembly);
 

@@ -117,9 +117,15 @@
     <Compile Include="App_Packages\LibLog.4.2\LibLog.cs" />
     <Compile Include="IdSvr\Cert.cs" />
     <Compile Include="IdSvr\IdSvrConfig.cs" />
+    <Compile Include="InMemoryService\ApiResourceSeeder.cs" />
     <Compile Include="InMemoryService\ClientSeeder.cs" />
+    <Compile Include="InMemoryService\IdentityResourceSeeder.cs" />
+    <Compile Include="InMemoryService\InMemoryApiResource.cs" />
+    <Compile Include="InMemoryService\InMemoryApiResourceService.cs" />
     <Compile Include="InMemoryService\InMemoryClient.cs" />
     <Compile Include="InMemoryService\InMemoryIdentityManagerService.cs" />
+    <Compile Include="InMemoryService\InMemoryIdentityResource.cs" />
+    <Compile Include="InMemoryService\InMemoryIdentityResourceService.cs" />
     <Compile Include="InMemoryService\InMemoryScope.cs" />
     <Compile Include="InMemoryService\ScopeSeeder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

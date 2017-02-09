@@ -25,7 +25,7 @@ namespace IdentityAdmin.Extensions
     {
         public static ErrorModel ToError(this IdentityAdminResult result)
         {
-            if (result == null) throw new ArgumentNullException("result");
+            if (result == null) throw new ArgumentNullException(nameof(result));
 
             return new ErrorModel
             {

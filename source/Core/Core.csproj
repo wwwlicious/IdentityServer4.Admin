@@ -126,6 +126,16 @@
     <Compile Include="Api\Controllers\ScopeController.cs" />
     <Compile Include="Api\Filters\NoCacheAttribute.cs" />
     <Compile Include="Api\Filters\SecurityHeadersAttribute.cs" />
+    <Compile Include="Api\Models\ApiResource\ApiResourceDetailDataResource.cs" />
+    <Compile Include="Api\Models\ApiResource\ApiResourceDetailResource.cs" />
+    <Compile Include="Api\Models\IdentityResource\IdentityResourceDetailDataResource.cs" />
+    <Compile Include="Api\Models\IdentityResource\IdentityResourceDetailResource.cs" />
+    <Compile Include="Core\ApiResource\ApiResourceClaimValue.cs" />
+    <Compile Include="Core\ApiResource\ApiResourceDetail.cs" />
+    <Compile Include="Api\Models\ApiResource\ApiResourceQueryResultResource.cs" />
+    <Compile Include="Api\Models\ApiResource\ApiResourceQueryResultResourceData.cs" />
+    <Compile Include="Api\Models\ApiResource\ApiResourceResultResource.cs" />
+    <Compile Include="Api\Models\ApiResource\CreateApiResourceLink.cs" />
     <Compile Include="Api\Models\Client\ClientDetailDataResource.cs" />
     <Compile Include="Api\Models\Client\ClientDetailResource.cs" />
     <Compile Include="Api\Models\Client\ClientQueryResultResource.cs" />
@@ -133,6 +143,16 @@
     <Compile Include="Api\Models\Client\ClientResultResource.cs" />
     <Compile Include="Api\Models\Client\CreateClientLink.cs" />
     <Compile Include="Api\Models\ErrorModel.cs" />
+    <Compile Include="Api\Models\IdentityResource\CreateIdentityResourceLink.cs" />
+    <Compile Include="Core\ApiResource\ApiResourceScopeValue.cs" />
+    <Compile Include="Core\ApiResource\ApiResourceSecretValue.cs" />
+    <Compile Include="Core\IdentityResource\BaseIdentityResourceValue.cs" />
+    <Compile Include="Core\ApiResource\BaseApiResourceValue.cs" />
+    <Compile Include="Core\IdentityResource\IdentityResourceClaimValue.cs" />
+    <Compile Include="Core\IdentityResource\IdentityResourceDetail.cs" />
+    <Compile Include="Api\Models\IdentityResource\IdentityResourceQueryResultResource.cs" />
+    <Compile Include="Api\Models\IdentityResource\IdentityResourceQueryResultResourceData.cs" />
+    <Compile Include="Api\Models\IdentityResource\IdentityResourceResultResource.cs" />
     <Compile Include="Api\Models\Scope\CreateScopeLink.cs" />
     <Compile Include="Api\Models\Scope\ScopeDetailDataResource.cs" />
     <Compile Include="Api\Models\Scope\ScopeDetailResource.cs" />
@@ -166,6 +186,8 @@
     <Compile Include="Configuration\WebApiConfig.cs" />
     <Compile Include="Configuration\X509CertificateTicketDataProtector.cs" />
     <Compile Include="Constants.cs" />
+    <Compile Include="Core\ApiResource\ApiResourceMetaData.cs" />
+    <Compile Include="Core\ApiResource\ApiResourceSummary.cs" />
     <Compile Include="Core\Client\BaseClientValue.cs" />
     <Compile Include="Core\Client\ClientClaimValue.cs" />
     <Compile Include="Core\Client\ClientCorsOriginValue.cs" />
@@ -179,9 +201,13 @@
     <Compile Include="Core\Client\ClientSecretValue.cs" />
     <Compile Include="Core\Client\ClientSummary.cs" />
     <Compile Include="Core\CreateResult.cs" />
+    <Compile Include="Core\IApiResourceService.cs" />
     <Compile Include="Core\IdentityAdminResult.cs" />
     <Compile Include="Core\IdentityManagerResult`1.cs" />
+    <Compile Include="Core\IdentityResource\IdentityResourceMetaData.cs" />
+    <Compile Include="Core\IdentityResource\IdentityResourceSummary.cs" />
     <Compile Include="Core\IIdentityAdminService.cs" />
+    <Compile Include="Core\IIdentityResourceService.cs" />
     <Compile Include="Core\Metadata\ExecutablePropertyMetadata.cs" />
     <Compile Include="Core\Metadata\ExpressionPropertyMetadata.cs" />
     <Compile Include="Core\Metadata\IdentityAdminMetadata.cs" />
@@ -230,6 +256,8 @@
     </Content>
     <Content Include="Assets\Scripts\App\ttidAdmApiResources.js" />
     <Content Include="Assets\Scripts\App\ttidAdmIdentityResources.js" />
+    <EmbeddedResource Include="Assets\Templates\apiresources\edit.html" />
+    <EmbeddedResource Include="Assets\Templates\identityresources\edit.html" />
     <EmbeddedResource Include="Assets\Templates\apiresources\list.html" />
     <EmbeddedResource Include="Assets\Templates\identityresources\list.html" />
     <EmbeddedResource Include="Assets\Content\style.min.css">

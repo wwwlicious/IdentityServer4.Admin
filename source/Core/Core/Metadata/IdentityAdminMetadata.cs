@@ -20,17 +20,20 @@ using IdentityAdmin.Core.Scope;
 
 namespace IdentityAdmin.Core.Metadata
 {
+    using IdentityResource;
+
     public class IdentityAdminMetadata
     {
         public IdentityAdminMetadata()
         {
             this.ClientMetaData = new ClientMetaData();
             this.ScopeMetaData = new ScopeMetaData();
+            this.IdentityResourceMetaData = new IdentityResourceMetaData();
         }
 
         public ClientMetaData ClientMetaData { get; set; }
         public ScopeMetaData ScopeMetaData { get; set; }   
-
+        public IdentityResourceMetaData IdentityResourceMetaData { get; set; }
 
         internal void Validate()
         {
@@ -39,6 +42,9 @@ namespace IdentityAdmin.Core.Metadata
 
             if (ScopeMetaData == null) throw new InvalidOperationException("ScopeMetaData not assigned.");
             ScopeMetaData.Validate();
+
+            if (IdentityResourceMetaData == null) throw new InvalidOperationException("IdentityResourceMetaData not assigned.");
+            IdentityResourceMetaData.Validate();
         }
     }
 }

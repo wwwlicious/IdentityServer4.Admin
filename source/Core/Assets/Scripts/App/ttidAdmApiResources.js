@@ -10,7 +10,7 @@
                 controller: 'ListApiResourcesCtrl',
                 resolve: { apiResources: "idAdmApiResources" },
                 templateUrl: PathBase + '/assets/Templates.apiresources.list.html'
-            });
+            })
             //.when("/scopes/create", {
             //    controller: 'NewScopeCtrl',
             //    resolve: {
@@ -20,11 +20,11 @@
             //    },
             //    templateUrl: PathBase + '/assets/Templates.scopes.new.html'
             //})
-            //.when("/scopes/edit/:subject", {
-            //    controller: 'EditScopeCtrl',
-            //    resolve: { scopes: "idAdmScopes" },
-            //    templateUrl: PathBase + '/assets/Templates.scopes.edit.html'
-            //});
+            .when("/apiresources/edit/:subject", {
+                controller: 'EditApiResourceCtrl',
+                resolve: { apiResources: "idAdmApiResources" },
+                templateUrl: PathBase + '/assets/Templates.apiresources.edit.html'
+            });
     }
     config.$inject = ["$routeProvider", "PathBase"];
     app.config(config);
@@ -100,7 +100,7 @@
     //NewScopeCtrl.$inject = ["$scope", "idAdmScopes", "api", "ttFeedback"];
     //app.controller("NewScopeCtrl", NewScopeCtrl);
 
-    //function EditScopeCtrl($scope, idAdmScopes, $routeParams, ttFeedback, $location) {
+    function EditApiResourceCtrl($scope, idAdmApiResources, $routeParams, ttFeedback, $location) {
     //    var feedback = new ttFeedback();
     //    $scope.feedback = feedback;
 
@@ -240,8 +240,8 @@
     //            }, feedback.errorHandler);
     //    };
 
-    //}
-    //EditScopeCtrl.$inject = ["$scope", "idAdmScopes", "$routeParams", "ttFeedback", "$location"];
-    //app.controller("EditScopeCtrl", EditScopeCtrl);
+    }
+    EditApiResourceCtrl.$inject = ["$scope", "idAdmApiResources", "$routeParams", "ttFeedback", "$location"];
+    app.controller("EditApiResourceCtrl", EditApiResourceCtrl);
 
 })(angular);
