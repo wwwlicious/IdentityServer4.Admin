@@ -256,6 +256,7 @@
     </Content>
     <Content Include="Assets\Scripts\App\ttidAdmApiResources.js" />
     <Content Include="Assets\Scripts\App\ttidAdmIdentityResources.js" />
+    <EmbeddedResource Include="Assets\Templates\identityresources\new.html" />
     <EmbeddedResource Include="Assets\Templates\apiresources\edit.html" />
     <EmbeddedResource Include="Assets\Templates\identityresources\edit.html" />
     <EmbeddedResource Include="Assets\Templates\apiresources\list.html" />

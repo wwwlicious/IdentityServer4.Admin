@@ -1,13 +1,14 @@
 ﻿namespace IdentityAdmin.Host.InMemoryService
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
     using AutoMapper;
     using Core;
     using Core.ApiResource;
-    using Core.IdentityResource;
     using Core.Metadata;
+    using Extensions;
 
     public class InMemoryApiResourceService : IApiResourceService
     {
@@ -19,7 +20,8 @@
         {
             this._apiResources = apiResources;
 
-            Config = new MapperConfiguration(cfg => {
+            Config = new MapperConfiguration(cfg => 
+            {
 
 
                 //cfg.CreateMap<InMemoryIdentityResource, Scope>();
@@ -118,6 +120,52 @@
                 return Task.FromResult(new IdentityAdminResult<ApiResourceDetail>(result));
             }
             return Task.FromResult(new IdentityAdminResult<ApiResourceDetail>((ApiResourceDetail)null));
+        }
+
+        public Task<IdentityAdminResult> DeleteAsync(string subject)
+        {
+            int parsedSubject;
+            if (int.TryParse(subject, out parsedSubject))
+            {
+                var inMemoryApiResource = _apiResources.FirstOrDefault(p => p.Id == parsedSubject);
+                if (inMemoryApiResource == null)
+                {
+                    return Task.FromResult(new IdentityAdminResult("Invalid subject"));
+                }
+                _apiResources.Remove(inMemoryApiResource);
+                return Task.FromResult(IdentityAdminResult.Success);
+            }
+            return Task.FromResult(new IdentityAdminResult("Invalid subject"));
+        }
+
+        public Task<IdentityAdminResult> SetPropertyAsync(string subject, string type, string value)
+        {
+            int parsedSubject;
+            if (int.TryParse(subject, out parsedSubject))
+            {
+                var inMemoryApiResource = _apiResources.FirstOrDefault(p => p.Id == parsedSubject);
+                if (inMemoryApiResource == null)
+                {
+                    return Task.FromResult(new IdentityAdminResult("Invalid subject"));
+                }
+                var meta = GetMetadata();
+
+                SetScopeProperty(meta.UpdateProperties, inMemoryApiResource, type, value);
+
+                return Task.FromResult(IdentityAdminResult.Success);
+            }
+            return Task.FromResult(new IdentityAdminResult("Invalid subject"));
+        }
+
+        protected IdentityAdminResult SetScopeProperty(IEnumerable<PropertyMetadata> propsMeta, InMemoryApiResource apiResource, string type, string value)
+        {
+            IdentityAdminResult result;
+            if (propsMeta.TrySet(apiResource, type, value, out result))
+            {
+                return result;
+            }
+
+            throw new Exception("Invalid property type " + type);
         }
     }
 }

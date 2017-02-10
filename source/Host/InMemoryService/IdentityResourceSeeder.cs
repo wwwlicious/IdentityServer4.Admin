@@ -13,13 +13,29 @@
                 {
                     Id = 1,
                     Name = "Admin",
-                    Description = "They run the show"
+                    Description = "They run the show",
+                    Claims = new List<InMemoryIdentityResourceClaim>
+                    {
+                        new InMemoryIdentityResourceClaim
+                        {
+                            Id = 1,
+                            Type = "openid"
+                        }
+                    }
                 },
                 new InMemoryIdentityResource
                 {
                     Id = 2,
                     Name = "Manager",
-                    Description = "They pay the bills"
+                    Description = "They pay the bills",
+                    Claims = new List<InMemoryIdentityResourceClaim>
+                    {
+                        new InMemoryIdentityResourceClaim
+                        {
+                            Id = 2,
+                            Type = "email"
+                        }
+                    }
                 }
             };
 

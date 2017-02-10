@@ -101,33 +101,41 @@
     //app.controller("NewScopeCtrl", NewScopeCtrl);
 
     function EditApiResourceCtrl($scope, idAdmApiResources, $routeParams, ttFeedback, $location) {
-    //    var feedback = new ttFeedback();
-    //    $scope.feedback = feedback;
+        var feedback = new ttFeedback();
+        $scope.feedback = feedback;
 
-    //    function loadScope() {
-    //        return idAdmScopes.getScope($routeParams.subject)
-    //            .then(function (result) {
-    //                $scope.scope = result;
-    //                if (!result.data.properties) {
-    //                    $scope.tab = 1;
-    //                }
+        function loadApiResource() {
+            return idAdmApiResources.getApiResource($routeParams.subject)
+                .then(function(result) {
+                    $scope.apiResource = result;
+                    if (!result.data.properties) {
+                        $scope.tab = 1;
+                    }
+                }, feedback.errorHandler);
+        }
+        loadApiResource();
 
-    //            }, feedback.errorHandler);
-    //    };
-    //    loadScope();
+        $scope.setProperty = function (property) {
+            idAdmApiResources.setProperty(property)
+                .then(function () {
+                    if (property.meta.dataType !== 1) {
+                        feedback.message = property.meta.name + " Changed to: " + property.data;
+                    }
+                    else {
+                        feedback.message = property.meta.name + " Changed";
+                    }
+                    loadApiResource();
+                }, feedback.errorHandler);
+            };
 
-    //    $scope.setProperty = function (property) {
-    //        idAdmScopes.setProperty(property)
-    //            .then(function () {
-    //                if (property.meta.dataType !== 1) {
-    //                    feedback.message = property.meta.name + " Changed to: " + property.data;
-    //                }
-    //                else {
-    //                    feedback.message = property.meta.name + " Changed";
-    //                }
-    //                loadScope();
-    //            }, feedback.errorHandler);
-    //    };
+        $scope.deleteApiResource = function(apiResource) {
+            idAdmApiResources.deleteApiResource(apiResource)
+                .then(function() {
+                    feedback.message = "Api Resource Deleted";
+                    $scope.apiResource = null;
+                    $location.path('/apiresources/list');
+                }, feedback.errorHandler);
+        };
 
     //    $scope.deleteScope = function (scope) {
     //        idAdmScopes.deleteScope(scope)

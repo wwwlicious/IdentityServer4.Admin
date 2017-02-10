@@ -28,6 +28,8 @@ using IdentityAdmin.Extensions;
 
 namespace IdentityAdmin.Api.Controllers
 {
+    using Models.IdentityResource;
+
     [NoCache]
     [RoutePrefix(Constants.MetadataRoutePrefix)]
     public class MetaController : ApiController
@@ -83,7 +85,10 @@ namespace IdentityAdmin.Api.Controllers
             }
 
             links["identityresources"] = Url.RelativeLink(Constants.RouteNames.GetIdentityResources);
-
+            if (coreMeta.IdentityResourceMetaData.SupportsCreate)
+            {
+                links["createIdentityResource"] = new CreateIdentityResourceLink(Url, coreMeta.IdentityResourceMetaData);
+            }
 
             links["apiresources"] = Url.RelativeLink(Constants.RouteNames.GetApiResources);
             

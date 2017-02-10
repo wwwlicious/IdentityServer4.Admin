@@ -1,6 +1,7 @@
 ﻿namespace IdentityAdmin.Api.Controllers
 {
     using System;
+    using System.Linq;
     using System.Net;
     using System.Net.Http;
     using System.Threading.Tasks;
@@ -43,6 +44,16 @@
         public IHttpActionResult BadRequest<T>(T data)
         {
             return ResponseMessage(Request.CreateResponse(HttpStatusCode.BadRequest, data));
+        }
+
+        public IHttpActionResult NoContent()
+        {
+            return StatusCode(HttpStatusCode.NoContent);
+        }
+
+        public IHttpActionResult MethodNotAllowed()
+        {
+            return StatusCode(HttpStatusCode.MethodNotAllowed);
         }
 
         [HttpGet, Route("", Name = Constants.RouteNames.GetApiResources)]
@@ -96,7 +107,84 @@
         [HttpDelete, Route("{subject}", Name = Constants.RouteNames.DeleteApiResource)]
         public async Task<IHttpActionResult> DeleteApiResourceAsync(string subject)
         {
-            return BadRequest("");
+            var meta = await GetCoreMetaDataAsync();
+            if (!meta.SupportsDelete)
+            {
+                return MethodNotAllowed();
+            }
+
+            if (string.IsNullOrWhiteSpace(subject))
+            {
+                ModelState["subject.String"].Errors.Clear();
+                ModelState.AddModelError("", Messages.SubjectRequired);
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState.ToError());
+            }
+
+            var result = await _service.DeleteAsync(subject);
+            if (result.IsSuccess)
+            {
+                return NoContent();
+            }
+
+            return BadRequest(result.ToError());
+        }
+
+        [HttpPut, Route("{subject}/properties/{type}", Name = Constants.RouteNames.UpdateApiResourceProperty)]
+        public async Task<IHttpActionResult> SetPropertyAsync(string subject, string type)
+        {
+            if (string.IsNullOrWhiteSpace(subject))
+            {
+                ModelState["subject.String"].Errors.Clear();
+                ModelState.AddModelError("", Messages.SubjectRequired);
+            }
+
+            type = type.FromBase64UrlEncoded();
+
+            string value = await Request.Content.ReadAsStringAsync();
+            var meta = await GetCoreMetaDataAsync();
+            ValidateUpdateProperty(meta, type, value);
+
+            if (ModelState.IsValid)
+            {
+                var result = await _service.SetPropertyAsync(subject, type, value);
+                if (result.IsSuccess)
+                {
+                    return NoContent();
+                }
+
+                ModelState.AddErrors(result);
+            }
+
+            return BadRequest(ModelState.ToError());
+        }
+
+        private void ValidateUpdateProperty(ApiResourceMetaData apiResourceMetaData, string type, string value)
+        {
+            if (apiResourceMetaData == null) throw new ArgumentNullException(nameof(apiResourceMetaData));
+
+            if (string.IsNullOrWhiteSpace(type))
+            {
+                ModelState.AddModelError("", Messages.PropertyTypeRequired);
+                return;
+            }
+
+            var prop = apiResourceMetaData.UpdateProperties.SingleOrDefault(x => x.Type == type);
+            if (prop == null)
+            {
+                ModelState.AddModelError("", string.Format(Messages.PropertyInvalid, type));
+            }
+            else
+            {
+                var error = prop.Validate(value);
+                if (error != null)
+                {
+                    ModelState.AddModelError("", error);
+                }
+            }
         }
     }
 }

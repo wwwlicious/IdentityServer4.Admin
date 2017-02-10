@@ -4343,6 +4343,44 @@ angular.module("ui.bootstrap",["ui.bootstrap.tpls","ui.bootstrap.datepicker","ui
                 return $http.get(api.links.identityresources, { params: { filter: filter, start: start, count: count } })
                             .then(mapResponseData, errorHandler("Error Getting Identity Resources"));
             };
+            svc.getIdentityResource = function (subject) {
+                return $http.get(api.links.identityresources + "/" + encodeURIComponent(subject))
+                    .then(mapResponseData, errorHandler("Error Getting Identity Resource"));
+            };
+
+            svc.deleteIdentityResource = function (identityResource) {
+                return $http.delete(identityResource.links.delete)
+                    .then(nop, errorHandler("Error Deleting Identity Resource"));
+            };
+
+            if (api.links.createIdentityResource) {
+                svc.createIdentityResource = function (properties) {
+                    return $http.post(api.links.createIdentityResource.href, properties)
+                        .then(mapResponseData, errorHandler("Error Creating Identity Resource"));
+                };
+            }
+
+            svc.setProperty = function (property) {
+                if (property.data === 0) {
+                    property.data = "0";
+                }
+                if (property.data === false) {
+                    property.data = "false";
+                }
+                return $http.put(property.links.update, property.data)
+                    .then(nop, errorHandler(property.meta && property.meta.name && "Error Setting " + property.meta.name || "Error Setting Property"));
+            };
+
+
+            svc.addClaim = function (claims, claim) {
+                return $http.post(claims.links.create, claim)
+                    .then(nop, errorHandler("Error Adding Claim"));
+            };
+            svc.removeClaim = function (claim) {
+                return $http.delete(claim.links.delete)
+                    .then(nop, errorHandler("Error Removing Claim"));
+            };
+
         });
 
         return svc;
@@ -4374,6 +4412,28 @@ angular.module("ui.bootstrap",["ui.bootstrap.tpls","ui.bootstrap.datepicker","ui
                 return $http.get(api.links.apiresources, { params: { filter: filter, start: start, count: count } })
                             .then(mapResponseData, errorHandler("Error getting Api Resources"));
             };
+
+            svc.getApiResource = function (subject) {
+                return $http.get(api.links.apiresources + "/" + encodeURIComponent(subject))
+                    .then(mapResponseData, errorHandler("Error Getting Api Resource"));
+            };
+
+            svc.deleteApiResource = function (apiResource) {
+                return $http.delete(apiResource.links.delete)
+                    .then(nop, errorHandler("Error Deleting Api Resource"));
+            };
+
+            svc.setProperty = function (property) {
+                if (property.data === 0) {
+                    property.data = "0";
+                }
+                if (property.data === false) {
+                    property.data = "false";
+                }
+                return $http.put(property.links.update, property.data)
+                    .then(nop, errorHandler(property.meta && property.meta.name && "Error Setting " + property.meta.name || "Error Setting Property"));
+            };
+
         });
         return svc;
     }
@@ -5243,15 +5303,15 @@ angular.module("ui.bootstrap",["ui.bootstrap.tpls","ui.bootstrap.datepicker","ui
                 resolve: { identityResources: "idAdmIdentityResources" },
                 templateUrl: PathBase + '/assets/Templates.identityresources.list.html'
             })
-        //.when("/scopes/create", {
-        //    controller: 'NewScopeCtrl',
-        //    resolve: {
-        //        api: function (idAdmApi) {
-        //            return idAdmApi.get();
-        //        }
-        //    },
-        //    templateUrl: PathBase + '/assets/Templates.scopes.new.html'
-        //})
+            .when("/identityresources/create", {
+                controller: 'NewIdentityResourceCtrl',
+                resolve: {
+                    api: function (idAdmApi) {
+                        return idAdmApi.get();
+                    }
+                },
+                templateUrl: PathBase + '/assets/Templates.identityresources.new.html'
+            })
             .when("/identityresources/edit/:subject", {
                 controller: 'EditIdentityResourceCtrl',
                 resolve: { identityResources: "idAdmIdentityResources" },
@@ -5298,180 +5358,96 @@ angular.module("ui.bootstrap",["ui.bootstrap.tpls","ui.bootstrap.datepicker","ui
     ListIdentityResourcesCtrl.$inject = ["$scope", "idAdmIdentityResources", "idAdmPager", "$routeParams", "$location"];
     app.controller("ListIdentityResourcesCtrl", ListIdentityResourcesCtrl);
 
-    //function NewScopeCtrl($scope, idAdmScopes, api, ttFeedback) {
-    //    var feedback = new ttFeedback();
-    //    $scope.feedback = feedback;
-    //    if (!api.links.createScope) {
-    //        feedback.errors = "Create Not Supported";
-    //        return;
-    //    }
-    //    else {
-    //        var properties = api.links.createScope.meta
-    //            .map(function (item) {
-    //                return {
-    //                    meta: item,
-    //                    data: item.dataType === 5 ? false : undefined
-    //                };
-    //            });
-    //        $scope.properties = properties;
-    //        $scope.create = function (properties) {
-    //            var props = properties.map(function (item) {
-    //                return {
-    //                    type: item.meta.type,
-    //                    value: item.data
-    //                };
-    //            });
-    //            idAdmScopes.createScope(props)
-    //                .then(function (result) {
-    //                    $scope.last = result;
-    //                    feedback.message = "Create Success";
-    //                }, feedback.errorHandler);
-    //        };
-    //    }
-    //}
-    //NewScopeCtrl.$inject = ["$scope", "idAdmScopes", "api", "ttFeedback"];
-    //app.controller("NewScopeCtrl", NewScopeCtrl);
+    function NewIdentityResourceCtrl($scope, idAdmIdentityResources, api, ttFeedback) {
+        var feedback = new ttFeedback();
+        $scope.feedback = feedback;
+        if (!api.links.createIdentityResource) {
+            feedback.errors = "Create Not Supported";
+            return;
+        }
+        else {
+            var properties = api.links.createIdentityResource.meta
+                .map(function (item) {
+                    return {
+                        meta: item,
+                        data: item.dataType === 5 ? false : undefined
+                    };
+                });
+            $scope.properties = properties;
+            $scope.create = function (properties) {
+                var props = properties.map(function (item) {
+                    return {
+                        type: item.meta.type,
+                        value: item.data
+                    };
+                });
+                idAdmIdentityResources.createIdentityResource(props)
+                    .then(function (result) {
+                        $scope.last = result;
+                        feedback.message = "Create Success";
+                    }, feedback.errorHandler);
+            };
+        }
+    }
+    NewIdentityResourceCtrl.$inject = ["$scope", "idAdmIdentityResources", "api", "ttFeedback"];
+    app.controller("NewIdentityResourceCtrl", NewIdentityResourceCtrl);
 
     function EditIdentityResourceCtrl($scope, idAdmIdentityResources, $routeParams, ttFeedback, $location) {
-    //    var feedback = new ttFeedback();
-    //    $scope.feedback = feedback;
+        var feedback = new ttFeedback();
+        $scope.feedback = feedback;
 
-    //    function loadScope() {
-    //        return idAdmScopes.getScope($routeParams.subject)
-    //            .then(function (result) {
-    //                $scope.scope = result;
-    //                if (!result.data.properties) {
-    //                    $scope.tab = 1;
-    //                }
+        function loadIdentityResource() {
+            return idAdmIdentityResources.getIdentityResource($routeParams.subject)
+                .then(function(result) {
+                    $scope.identityResource = result;
+                    if (!result.data.properties) {
+                        $scope.tab = 1;
+                    }
+                }, feedback.errorHandler);
+        };
+        loadIdentityResource();
 
-    //            }, feedback.errorHandler);
-    //    };
-    //    loadScope();
+        $scope.setProperty = function (property) {
+            idAdmIdentityResources.setProperty(property)
+                .then(function () {
+                    if (property.meta.dataType !== 1) {
+                        feedback.message = property.meta.name + " Changed to: " + property.data;
+                    }
+                    else {
+                        feedback.message = property.meta.name + " Changed";
+                    }
+                    loadIdentityResource();
+                }, feedback.errorHandler);
+        };
 
-    //    $scope.setProperty = function (property) {
-    //        idAdmScopes.setProperty(property)
-    //            .then(function () {
-    //                if (property.meta.dataType !== 1) {
-    //                    feedback.message = property.meta.name + " Changed to: " + property.data;
-    //                }
-    //                else {
-    //                    feedback.message = property.meta.name + " Changed";
-    //                }
-    //                loadScope();
-    //            }, feedback.errorHandler);
-    //    };
+        $scope.deleteIdentityResource = function(identityResource) {
+            idAdmIdentityResources.deleteIdentityResource(identityResource)
+                .then(function() {
+                    feedback.message = "Identity Resource Deleted";
+                    $scope.identityResource = null;
+                    $location.path('/identityresources/list');
+                }, feedback.errorHandler);
+        };
 
-    //    $scope.deleteScope = function (scope) {
-    //        idAdmScopes.deleteScope(scope)
-    //               .then(function () {
-    //                   feedback.message = "Scope Deleted";
-    //                   $scope.scope = null;
-    //                   $location.path('/scopes/list');
-    //               }, feedback.errorHandler);
-    //    };
+        $scope.addIdentityResourceClaim = function(claims, claim) {
+            idAdmIdentityResources.addClaim(claims, claim)
+                .then(function() {
+                    feedback.message = "Identity Resource Claim Added : " + claim.type;
+                    loadIdentityResource().then(function() {
+                        $scope.claim = claim.data;
+                    });
+                }, feedback.errorHandler);
+        };
 
-    //    //Claims
-    //    $scope.addScopeClaim = function (scopeClaims, scopeClaim) {
-    //        idAdmScopes.addScopeClaim(scopeClaims, scopeClaim)
-    //            .then(function () {
-    //                feedback.message = "Scope Claim Added : " + scopeClaim.name + ", " + scopeClaim.description;
-    //                loadScope().then(function () {
-    //                    $scope.claim = scopeClaim.data;
-    //                });
-    //                loadScope();
-    //            }, feedback.errorHandler);
-    //    };
-    //    $scope.removeScopeClaim = function (scopeClaim) {
-    //        idAdmScopes.removeScopeClaim(scopeClaim)
-    //            .then(function () {
-    //                feedback.message = "Scope Claim Removed : " + scopeClaim.data.name + ", " + scopeClaim.data.description;
-    //                loadScope().then(function () {
-    //                    $scope.claim = scopeClaim.data;
-    //                });
-    //            }, feedback.errorHandler);
-    //    };
-
-    //    $scope.availableHashes = {
-    //        chosenHash: "SHA-512",
-    //        choices: [
-    //        {
-    //            id: "SHA-256",
-    //            text: "SHA-256",
-    //            isDefault: "false"
-    //        }, {
-    //            id: "SHA-512",
-    //            text: "SHA-512",
-    //            isDefault: "true"
-    //        }
-    //        ]
-    //    };
-    //    function calculateScopeScretHash(clientSecret) {
-    //        var hashObj = new jsSHA(
-	//			$scope.availableHashes.chosenHash,
-	//			"TEXT",
-	//			{ numRounds: parseInt(1, 10) }
-	//		);
-    //        hashObj.update(clientSecret.value);
-    //        clientSecret.value = hashObj.getHash("B64");
-    //    }
-
-    //    //Datepicker
-
-    //    $scope.calendar = {
-    //        isopen: {},
-    //        dateFormat: "yyyy/MM/dd hh:MM",
-    //        dateOptions: {},
-    //        open: function ($event, index) {
-    //            $event.preventDefault();
-    //            $event.stopPropagation();
-    //            $scope.calendar.isopen[index] = true;
-    //        }
-    //    };
-    //    $scope.dateSelected = function (secret) {
-    //        var value = $("[data-dateid='" + secret.data.id + "']").val();
-    //        secret.data.expiration = value;
-
-    //    }
-    //    //Secrets
-    //    $scope.addScopeSecret = function (scopeSecrets, scopeSecret) {
-    //        calculateScopeScretHash(scopeSecret);
-    //        idAdmScopes.addScopeSecret(scopeSecrets, scopeSecret)
-    //            .then(function () {
-    //                feedback.message = "Scope Secret Added : " + scopeSecret.type;
-    //                loadScope().then(function () {
-    //                    $scope.secret = scopeSecret.data;
-    //                });
-    //                loadScope();
-    //            }, feedback.errorHandler);
-    //    };
-    //    $scope.updateScopeClaim = function (claim) {
-    //        idAdmScopes.updateScopeClaim(claim)
-    //                  .then(function () {
-    //                      feedback.message = "Scope claim updated : " + claim.data.name;
-    //                      loadScope().then(function () {
-    //                          $scope.claim = claim.data;
-    //                      });
-    //                  }, feedback.errorHandler);
-    //    }
-    //    $scope.updateScopeSecret = function (scopeSecret) {
-    //        idAdmScopes.updateScopeSecret(scopeSecret)
-    //            .then(function () {
-    //                feedback.message = "Scope Secret updated : " + scopeSecret.data.type;
-    //                loadScope().then(function () {
-    //                    $scope.secret = scopeSecret.data;
-    //                });
-    //            }, feedback.errorHandler);
-    //    };
-    //    $scope.removeScopeSecret = function (scopeSecret) {
-    //        idAdmScopes.removeScopeSecret(scopeSecret)
-    //            .then(function () {
-    //                feedback.message = "Scope Secret Removed : " + scopeSecret.data.type;
-    //                loadScope().then(function () {
-    //                    $scope.secret = scopeSecret.data;
-    //                });
-    //            }, feedback.errorHandler);
-    //    };
-
+        $scope.removeIdentityResourceClaim = function(claim) {
+            idAdmIdentityResources.removeClaim(claim)
+                .then(function() {
+                    feedback.message = "Identity Resource Claim Removed : " + claim.data.type;
+                    loadIdentityResource().then(function () {
+                        $scope.claim = claim.data;
+                    });
+                }, feedback.errorHandler);
+        };
     }
     EditIdentityResourceCtrl.$inject = ["$scope", "idAdmIdentityResources", "$routeParams", "ttFeedback", "$location"];
     app.controller("EditIdentityResourceCtrl", EditIdentityResourceCtrl);
@@ -5580,33 +5556,41 @@ angular.module("ui.bootstrap",["ui.bootstrap.tpls","ui.bootstrap.datepicker","ui
     //app.controller("NewScopeCtrl", NewScopeCtrl);
 
     function EditApiResourceCtrl($scope, idAdmApiResources, $routeParams, ttFeedback, $location) {
-    //    var feedback = new ttFeedback();
-    //    $scope.feedback = feedback;
+        var feedback = new ttFeedback();
+        $scope.feedback = feedback;
 
-    //    function loadScope() {
-    //        return idAdmScopes.getScope($routeParams.subject)
-    //            .then(function (result) {
-    //                $scope.scope = result;
-    //                if (!result.data.properties) {
-    //                    $scope.tab = 1;
-    //                }
+        function loadApiResource() {
+            return idAdmApiResources.getApiResource($routeParams.subject)
+                .then(function(result) {
+                    $scope.apiResource = result;
+                    if (!result.data.properties) {
+                        $scope.tab = 1;
+                    }
+                }, feedback.errorHandler);
+        }
+        loadApiResource();
 
-    //            }, feedback.errorHandler);
-    //    };
-    //    loadScope();
+        $scope.setProperty = function (property) {
+            idAdmApiResources.setProperty(property)
+                .then(function () {
+                    if (property.meta.dataType !== 1) {
+                        feedback.message = property.meta.name + " Changed to: " + property.data;
+                    }
+                    else {
+                        feedback.message = property.meta.name + " Changed";
+                    }
+                    loadApiResource();
+                }, feedback.errorHandler);
+            };
 
-    //    $scope.setProperty = function (property) {
-    //        idAdmScopes.setProperty(property)
-    //            .then(function () {
-    //                if (property.meta.dataType !== 1) {
-    //                    feedback.message = property.meta.name + " Changed to: " + property.data;
-    //                }
-    //                else {
-    //                    feedback.message = property.meta.name + " Changed";
-    //                }
-    //                loadScope();
-    //            }, feedback.errorHandler);
-    //    };
+        $scope.deleteApiResource = function(apiResource) {
+            idAdmApiResources.deleteApiResource(apiResource)
+                .then(function() {
+                    feedback.message = "Api Resource Deleted";
+                    $scope.apiResource = null;
+                    $location.path('/apiresources/list');
+                }, feedback.errorHandler);
+        };
 
     //    $scope.deleteScope = function (scope) {
     //        idAdmScopes.deleteScope(scope)

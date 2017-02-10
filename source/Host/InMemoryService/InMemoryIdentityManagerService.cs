@@ -28,6 +28,8 @@ using Thinktecture.IdentityServer.Core.Models;
 
 namespace IdentityAdmin.Host.InMemoryService
 {
+    using Core.IdentityResource;
+
     internal class InMemoryIdentityManagerService : IIdentityAdminService
     {
         private ICollection<InMemoryClient> _clients;
@@ -106,11 +108,27 @@ namespace IdentityAdmin.Host.InMemoryService
                     UpdateProperties = updateScope
                 };
 
+                var updateIdentityResource = new List<PropertyMetadata>();
+                updateIdentityResource.AddRange(PropertyMetadata.FromType<InMemoryIdentityResource>());
+
+                var createIdentityResource = new List<PropertyMetadata>
+                {
+                    PropertyMetadata.FromProperty<InMemoryIdentityResource>(x => x.Name, "IdentityResourceName", required: true)
+                };
+
+                var identityResource = new IdentityResourceMetaData
+                {
+                    SupportsCreate = true,
+                    SupportsDelete = true,
+                    CreateProperties = createIdentityResource,
+                    UpdateProperties = updateIdentityResource
+                };
 
                 _metadata = new IdentityAdminMetadata
                 {
                     ClientMetaData = client,
-                    ScopeMetaData = scope
+                    ScopeMetaData = scope,
+                    IdentityResourceMetaData = identityResource
                 };
             }
             return _metadata;

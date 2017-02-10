@@ -343,6 +343,44 @@
                 return $http.get(api.links.identityresources, { params: { filter: filter, start: start, count: count } })
                             .then(mapResponseData, errorHandler("Error Getting Identity Resources"));
             };
+            svc.getIdentityResource = function (subject) {
+                return $http.get(api.links.identityresources + "/" + encodeURIComponent(subject))
+                    .then(mapResponseData, errorHandler("Error Getting Identity Resource"));
+            };
+
+            svc.deleteIdentityResource = function (identityResource) {
+                return $http.delete(identityResource.links.delete)
+                    .then(nop, errorHandler("Error Deleting Identity Resource"));
+            };
+
+            if (api.links.createIdentityResource) {
+                svc.createIdentityResource = function (properties) {
+                    return $http.post(api.links.createIdentityResource.href, properties)
+                        .then(mapResponseData, errorHandler("Error Creating Identity Resource"));
+                };
+            }
+
+            svc.setProperty = function (property) {
+                if (property.data === 0) {
+                    property.data = "0";
+                }
+                if (property.data === false) {
+                    property.data = "false";
+                }
+                return $http.put(property.links.update, property.data)
+                    .then(nop, errorHandler(property.meta && property.meta.name && "Error Setting " + property.meta.name || "Error Setting Property"));
+            };
+
+
+            svc.addClaim = function (claims, claim) {
+                return $http.post(claims.links.create, claim)
+                    .then(nop, errorHandler("Error Adding Claim"));
+            };
+            svc.removeClaim = function (claim) {
+                return $http.delete(claim.links.delete)
+                    .then(nop, errorHandler("Error Removing Claim"));
+            };
+
         });
 
         return svc;
@@ -374,6 +412,28 @@
                 return $http.get(api.links.apiresources, { params: { filter: filter, start: start, count: count } })
                             .then(mapResponseData, errorHandler("Error getting Api Resources"));
             };
+
+            svc.getApiResource = function (subject) {
+                return $http.get(api.links.apiresources + "/" + encodeURIComponent(subject))
+                    .then(mapResponseData, errorHandler("Error Getting Api Resource"));
+            };
+
+            svc.deleteApiResource = function (apiResource) {
+                return $http.delete(apiResource.links.delete)
+                    .then(nop, errorHandler("Error Deleting Api Resource"));
+            };
+
+            svc.setProperty = function (property) {
+                if (property.data === 0) {
+                    property.data = "0";
+                }
+                if (property.data === false) {
+                    property.data = "false";
+                }
+                return $http.put(property.links.update, property.data)
+                    .then(nop, errorHandler(property.meta && property.meta.name && "Error Setting " + property.meta.name || "Error Setting Property"));
+            };
+
         });
         return svc;
     }

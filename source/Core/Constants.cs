@@ -94,11 +94,15 @@ namespace IdentityAdmin
             public const string GetIdentityResource = "GetIdentityResource";
             public const string CreateIdentityResource = "CreateIdentityResource";
             public const string DeleteIdentityResource = "DeleteIdentityResource";
+            public const string UpdateIdentityResourceProperty = "UpdateIdentityResourceProperty";
+            public const string RemoveIdentityResourceClaim = "RemoveIdentityResourceClaim";
+            public const string AddIdentityResourceClaim = "AddIdentityResourceClaim";
 
             public const string GetApiResources = "GetApiResources";
             public const string GetApiResource = "GetApiResource";
             public const string CreateApiResource = "CreateApiResource";
             public const string DeleteApiResource = "DeleteApiResource";
+            public const string UpdateApiResourceProperty = "UpdateApiResourceProperty";
 
             public const string Home = "Home";
             public const string Logout = "Logout";
