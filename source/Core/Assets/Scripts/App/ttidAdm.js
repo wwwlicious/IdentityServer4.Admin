@@ -441,6 +441,15 @@
                     .then(nop, errorHandler(property.meta && property.meta.name && "Error Setting " + property.meta.name || "Error Setting Property"));
             };
 
+            svc.addClaim = function (claims, claim) {
+                return $http.post(claims.links.create, claim)
+                    .then(nop, errorHandler("Error Adding Claim"));
+            };
+            svc.removeClaim = function (claim) {
+                return $http.delete(claim.links.delete)
+                    .then(nop, errorHandler("Error Removing Claim"));
+            };
+
         });
         return svc;
     }

@@ -7,6 +7,7 @@
     using AutoMapper;
     using Core;
     using Core.ApiResource;
+    using Core.IdentityResource;
     using Core.Metadata;
     using Extensions;
 
@@ -135,6 +136,21 @@
                     Description = inMemoryApiResource.Description                    
                 };
 
+                var metadata = GetMetadata();
+                var props = from prop in metadata.UpdateProperties
+                            select new PropertyValue
+                            {
+                                Type = prop.Type,
+                                Value = GetProperty(prop, inMemoryApiResource),
+                            };
+
+                result.Properties = props.ToArray();
+                result.ResourceClaims = inMemoryApiResource.Claims.Select(x => new ApiResourceClaimValue
+                {
+                    Id = x.Id.ToString(),
+                    Type = x.Type
+                });
+
                 return Task.FromResult(new IdentityAdminResult<ApiResourceDetail>(result));
             }
             return Task.FromResult(new IdentityAdminResult<ApiResourceDetail>((ApiResourceDetail)null));
@@ -175,6 +191,16 @@
             return Task.FromResult(new IdentityAdminResult("Invalid subject"));
         }
 
+        protected string GetProperty(PropertyMetadata propMetadata, InMemoryApiResource apiResource)
+        {
+            string val;
+            if (propMetadata.TryGet(apiResource, out val))
+            {
+                return val;
+            }
+            throw new Exception("Invalid property type " + propMetadata.Type);
+        }
+
         protected IdentityAdminResult SetProperty(IEnumerable<PropertyMetadata> propsMeta, InMemoryApiResource apiResource, string type, string value)
         {
             IdentityAdminResult result;
@@ -184,6 +210,52 @@
             }
 
             throw new Exception("Invalid property type " + type);
+        }
+
+        public Task<IdentityAdminResult> AddClaimAsync(string subject, string type)
+        {
+            int parsedSubject;
+            if (int.TryParse(subject, out parsedSubject))
+            {
+                var inMemoryApiResource = _apiResources.FirstOrDefault(p => p.Id == parsedSubject);
+                if (inMemoryApiResource == null)
+                {
+                    return Task.FromResult(new IdentityAdminResult("Invalid subject"));
+                }
+                var existingClaims = inMemoryApiResource.Claims;
+                if (existingClaims.All(x => x.Type != type))
+                {
+                    inMemoryApiResource.Claims.Add(new InMemoryApiResourceClaim
+                    {
+                        Id = inMemoryApiResource.Claims.Count + 1,
+                        Type = type
+                    });
+                }
+                return Task.FromResult(IdentityAdminResult.Success);
+            }
+
+            return Task.FromResult(new IdentityAdminResult("Invalid subject"));
+        }
+
+        public Task<IdentityAdminResult> RemoveClaimAsync(string subject, string id)
+        {
+            int parsedSubject;
+            int parseClaimId;
+            if (int.TryParse(subject, out parsedSubject) && int.TryParse(id, out parseClaimId))
+            {
+                var apiResource = _apiResources.FirstOrDefault(p => p.Id == parsedSubject);
+                if (apiResource == null)
+                {
+                    return Task.FromResult(new IdentityAdminResult("Invalid subject"));
+                }
+                var existingClaim = apiResource.Claims.FirstOrDefault(p => p.Id == parseClaimId);
+                if (existingClaim != null)
+                {
+                    apiResource.Claims.Remove(existingClaim);
+                }
+                return Task.FromResult(IdentityAdminResult.Success);
+            }
+            return Task.FromResult(new IdentityAdminResult("Invalid subject"));
         }
     }
 }

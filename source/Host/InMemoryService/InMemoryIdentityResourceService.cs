@@ -144,7 +144,7 @@
                             select new PropertyValue
                             {
                                 Type = prop.Type,
-                                Value = GetScopeProperty(prop, inMemoryApiResource),
+                                Value = GetProperty(prop, inMemoryApiResource),
                             };
 
                 result.Properties = props.ToArray();
@@ -194,7 +194,7 @@
             return Task.FromResult(new IdentityAdminResult("Invalid subject"));
         }
 
-        protected string GetScopeProperty(PropertyMetadata propMetadata, InMemoryIdentityResource identityResource)
+        protected string GetProperty(PropertyMetadata propMetadata, InMemoryIdentityResource identityResource)
         {
             string val;
             if (propMetadata.TryGet(identityResource, out val))

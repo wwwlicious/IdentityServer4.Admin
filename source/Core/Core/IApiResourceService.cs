@@ -17,5 +17,9 @@
         Task<IdentityAdminResult> DeleteAsync(string subject);
 
         Task<IdentityAdminResult> SetPropertyAsync(string subject, string type, string value);
+
+        Task<IdentityAdminResult> AddClaimAsync(string subject, string type);
+
+        Task<IdentityAdminResult> RemoveClaimAsync(string subject, string id);
     }
 }

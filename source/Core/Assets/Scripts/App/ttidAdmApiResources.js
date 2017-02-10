@@ -137,35 +137,26 @@
                 }, feedback.errorHandler);
         };
 
-    //    $scope.deleteScope = function (scope) {
-    //        idAdmScopes.deleteScope(scope)
-    //               .then(function () {
-    //                   feedback.message = "Scope Deleted";
-    //                   $scope.scope = null;
-    //                   $location.path('/scopes/list');
-    //               }, feedback.errorHandler);
-    //    };
-
         //Claims
-    //    $scope.addScopeClaim = function (scopeClaims, scopeClaim) {
-    //        idAdmScopes.addScopeClaim(scopeClaims, scopeClaim)
-    //            .then(function () {
-    //                feedback.message = "Scope Claim Added : " + scopeClaim.name + ", " + scopeClaim.description;
-    //                loadScope().then(function () {
-    //                    $scope.claim = scopeClaim.data;
-    //                });
-    //                loadScope();
-    //            }, feedback.errorHandler);
-    //    };
-    //    $scope.removeScopeClaim = function (scopeClaim) {
-    //        idAdmScopes.removeScopeClaim(scopeClaim)
-    //            .then(function () {
-    //                feedback.message = "Scope Claim Removed : " + scopeClaim.data.name + ", " + scopeClaim.data.description;
-    //                loadScope().then(function () {
-    //                    $scope.claim = scopeClaim.data;
-    //                });
-    //            }, feedback.errorHandler);
-    //    };
+        $scope.addApiResourceClaim = function(claims, claim) {
+            idAdmApiResources.addClaim(claims, claim)
+                .then(function () {
+                    feedback.message = "Api Resource Claim Added : " + claim.type;
+                    loadApiResource().then(function () {
+                        $scope.claim = claim.data;
+                    });
+                }, feedback.errorHandler);
+        };
+
+        $scope.removeApiResourceClaim = function(claim) {
+            idAdmApiResources.removeClaim(claim)
+                .then(function () {
+                    feedback.message = "Api Resource Claim Removed : " + claim.data.type;
+                    loadApiResource().then(function () {
+                        $scope.claim = claim.data;
+                    });
+                }, feedback.errorHandler);
+        };
 
     //    $scope.availableHashes = {
     //        chosenHash: "SHA-512",

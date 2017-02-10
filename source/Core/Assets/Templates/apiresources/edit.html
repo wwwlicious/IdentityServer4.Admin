@@ -13,15 +13,62 @@
 <div ng-show="apiResource">
     <div class="panel-body">
         <div class="tab-base">
-            <ul class="nav nav-tabs">                
+            <ul class="nav nav-tabs">
                 <li class="{{!tab ?'active':''}}" ng-show="apiResource.data.properties">
-                    <a ng-click="tab=0" href="#/apiresources/edit/{{identityResource.data.subject}}" role="tab" data-toggle="tab">Properties</a>
+                    <a ng-click="tab=0" href="#/apiresources/edit/{{apiResource.data.subject}}" role="tab" data-toggle="tab">Properties</a>
                 </li>
 
                 <li class="{{tab==1?'active':''}}" ng-show="apiResource.data.claims">
-                    <a ng-click="tab=1" href="#/apiresources/edit/{{identityResource.data.subject}}" role="tab" data-toggle="tab">Claims</a>
+                    <a ng-click="tab=1" href="#/apiresources/edit/{{apiResource.data.subject}}" role="tab" data-toggle="tab">Claims</a>
                 </li>
             </ul>
+
+            <div class="tab-content">
+                <id-adm-message message="feedback"></id-adm-message>
+                <div class="tab-pane {{!tab ?'active':''}}">
+                    <div class="line" ng-repeat="property in apiResource.data.properties">
+                        <div class="row line">
+                            <tt-property-editor property="property" set-property="setProperty"></tt-property-editor>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane {{tab==1?'active':''}}" ng-show="apiResource.data.claims">
+                    <div class="row section">
+                        <div class="col-sm-12">
+                            <form name="addClaimForm" class="form-inline" ng-submit="addApiResourceClaim(apiResource.data.claims, claim)">
+                                <div class="form-group">
+                                    <label for="type" class="column">Add Claim</label>
+                                    <input type="text" class="form-control client-edit-regular" id="type" placeholder="Type" required autofocus ng-model="claim.type">
+                                </div>
+                                <button type="submit" class="btn btn-primary" ng-disabled="addClaimForm.$invalid">Add</button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div ng-hide="apiResource.data.claims.data.length" class="col-sm-8">
+                            <div class="alert alert-info">
+                                <p>No Claims For Api Resource</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-striped" ng-show="apiResource.data.claims.data.length">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>Type</th>
+                                </tr>
+                            </thead>
+                            <tr ng-repeat="claim in apiResource.data.claims.data">
+                                <td>
+                                    <button class="btn btn-warning btn-xs" ng-click="removeApiResourceClaim(claim)">delete</button>
+                                </td>
+                                <td>{{claim.data.type}}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

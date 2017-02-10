@@ -103,6 +103,8 @@ namespace IdentityAdmin
             public const string CreateApiResource = "CreateApiResource";
             public const string DeleteApiResource = "DeleteApiResource";
             public const string UpdateApiResourceProperty = "UpdateApiResourceProperty";
+            public const string AddApiResourceClaim = "AddApiResourceClaim";
+            public const string RemoveApiResourceClaim = "RemoveApiResourceClaim";
 
             public const string Home = "Home";
             public const string Logout = "Logout";

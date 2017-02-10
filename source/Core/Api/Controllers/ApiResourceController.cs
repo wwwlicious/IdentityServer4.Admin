@@ -195,6 +195,50 @@
             return BadRequest(ModelState.ToError());
         }
 
+        [HttpPost, Route("{subject}/apiresourceclaim", Name = Constants.RouteNames.AddApiResourceClaim)]
+        public async Task<IHttpActionResult> AddApiResourceClaimAsync(string subject, ApiResourceClaimValue model)
+        {
+            if (string.IsNullOrWhiteSpace(subject))
+            {
+                ModelState["subject.String"].Errors.Clear();
+                ModelState.AddModelError("", Messages.SubjectRequired);
+            }
+
+            if (model == null)
+            {
+                ModelState.AddModelError("", "Model required");
+            }
+
+            if (ModelState.IsValid)
+            {
+                var result = await _service.AddClaimAsync(subject, model.Type);
+                if (result.IsSuccess)
+                {
+                    return NoContent();
+                }
+
+                ModelState.AddErrors(result);
+            }
+
+            return BadRequest(ModelState.ToError());
+        }
+
+        [HttpDelete, Route("{subject}/identityresourceclaim/{id}", Name = Constants.RouteNames.RemoveApiResourceClaim)]
+        public async Task<IHttpActionResult> RemoveApiResourceClaimAsync(string subject, string id)
+        {
+            if (string.IsNullOrWhiteSpace(subject) || string.IsNullOrWhiteSpace(id))
+            {
+                return NotFound();
+            }
+            var result = await _service.RemoveClaimAsync(subject, id);
+            if (result.IsSuccess)
+            {
+                return NoContent();
+            }
+
+            return BadRequest(result.ToError());
+        }
+
         private IEnumerable<string> ValidateCreateProperties(ApiResourceMetaData apiResourceMetaData, IEnumerable<PropertyValue> properties)
         {
             if (apiResourceMetaData == null) throw new ArgumentNullException(nameof(apiResourceMetaData));

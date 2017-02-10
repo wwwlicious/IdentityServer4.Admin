@@ -45,6 +45,31 @@
                     this["Properties"] = props.ToArray();
                 }
             }
+
+            if (apiResource.ResourceClaims != null)
+            {
+                var identityResourceClaims = from c in apiResource.ResourceClaims.ToArray()
+                                             select new
+                                             {
+                                                 Data = c,
+                                                 Links = new
+                                                 {
+                                                     delete = url.RelativeLink(Constants.RouteNames.RemoveApiResourceClaim, new
+                                                     {
+                                                         subject = apiResource.Subject,
+                                                         id = c.Id
+                                                     })
+                                                 }
+                                             };
+                this["Claims"] = new
+                {
+                    Data = identityResourceClaims.ToArray(),
+                    Links = new
+                    {
+                        create = url.RelativeLink(Constants.RouteNames.AddApiResourceClaim, new { subject = apiResource.Subject })
+                    }
+                };
+            }
         }
     }
 }
