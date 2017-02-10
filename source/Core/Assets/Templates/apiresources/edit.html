@@ -25,6 +25,10 @@
                 <li class="{{tab==2?'active':''}}" ng-show="apiResource.data.secrets">
                     <a ng-click="tab=2" href="#/apiresources/edit/{{apiResource.data.subject}}" role="tab" data-toggle="tab">Secrets</a>
                 </li>
+                
+                <li class="{{tab==3?'active':''}}" ng-show="apiResource.data.scopes">
+                    <a ng-click="tab=3" href="#/apiresources/edit/{{apiResource.data.subject}}" role="tab" data-toggle="tab">Scopes</a>
+                </li>
             </ul>
 
             <div class="tab-content">
@@ -128,6 +132,63 @@
                                         <button type="button" class="btn btn-default" ng-click="calendar.open($event, $index)"><i class="glyphicon glyphicon-calendar"></i></button>
                                     </span>
                                 </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane {{tab==3?'active':''}}">
+                    <div class="row section">
+                        <form name="addScopeForm" class="form-inline" ng-submit="addApiResourceScope(apiResource.data.scopes, scope)">
+                            <div class="form-group">
+                                <label for="type" class="column">Add Scope</label>
+                                <input type="text" class="form-control" id="type" placeholder="Type" required autofocus ng-model="scope.name">
+                            </div>
+                            <button type="submit" class="btn btn-primary" ng-disabled="addScopeForm.$invalid">Add</button>
+                        </form>
+                    </div>
+                    <div class="row">
+                        <div ng-hide="apiResource.data.scopes.data.length" class="col-sm-8">
+                            <div class="alert alert-info">
+                                <p>No secrets found for this Api Resource</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div ng-show="apiResource.data.scopes.data.length" class="detailList">
+                        <div class="row dlHeader">
+                            <div class="col-xs-2"></div>
+                            <div class="col-xs-2">Name</div>
+                            <div class="col-xs-2">Display Name</div>
+                            <div class="col-xs-3">Description</div>
+                            <div class="col-xs-1">Emphasize</div>
+                            <div class="col-xs-1">Required</div>
+                            <div class="col-xs-1">Show In Discovery Document</div>
+                        </div>
+                        <div class="row dlContent" ng-repeat="scope in apiResource.data.scopes.data">
+                            <div class="col-xs-2">
+                                <button class="btn btn-primary" ng-click="updateApiResourceScope(scope)">Update</button>
+                                <button class="btn btn-warning" ng-click="removeApiResourceScope(scope)">Delete</button>
+                            </div>
+                            <div class="col-xs-2" title="{{scope.data.name}}">{{scope.data.name}}</div>
+                            <div class="col-xs-2">
+                                <input type="text" placeholder="Display Name" class="form-control" value="{{scope.data.displayname}}" ng-model="scope.data.displayname" />
+                            </div>
+                            <div class="col-xs-3">
+                                <input type="text" placeholder="Description" class="form-control" value="{{scope.data.description}}" ng-model="scope.data.description" />
+                            </div>
+                            <div class="col-xs-1">
+                                <label class="form-checkbox form-normal form-primary form-text" ng-class="scope.data.emphasize ? 'active form-checkbox form-normal form-primary form-text' : 'form-checkbox form-normal form-primary form-text'">
+                                    <input type="checkbox" class="form-control" value="{{scope.data.emphasize}}" ng-model="scope.data.emphasize" />
+                                </label>
+                            </div>
+                            <div class="col-xs-1">
+                                <label class="form-checkbox form-normal form-primary form-text" ng-class="scope.data.required ? 'active form-checkbox form-normal form-primary form-text' : 'form-checkbox form-normal form-primary form-text'">
+                                    <input type="checkbox" class="form-control" value="{{scope.data.required}}" ng-model="scope.data.required" />
+                                </label>
+                            </div>
+                            <div class="col-xs-1">
+                                <label class="form-checkbox form-normal form-primary form-text" ng-class="scope.data.showindiscoverydocument ? 'active form-checkbox form-normal form-primary form-text' : 'form-checkbox form-normal form-primary form-text'">
+                                    <input type="checkbox" class="form-control" value="{{scope.data.showindiscoverydocument}}" ng-model="scope.data.showindiscoverydocument" />
+                                </label>
                             </div>
                         </div>
                     </div>

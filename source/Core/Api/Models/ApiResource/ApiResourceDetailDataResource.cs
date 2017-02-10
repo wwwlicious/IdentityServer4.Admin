@@ -63,6 +63,15 @@
                     create = url.RelativeLink(Constants.RouteNames.AddApiResourceSecret, new { subject = apiResource.Subject })
                 }
             };
+
+            this["Scopes"] = new
+            {
+                Data = GetScopes(apiResource, url).ToArray(),
+                Links = new
+                {
+                    create = url.RelativeLink(Constants.RouteNames.AddApiResourceScope, new { subject = apiResource.Subject })                    
+                }
+            };
         }
 
         private IEnumerable<object> GetClaims(ApiResourceDetail apiResource, UrlHelper url)
@@ -110,6 +119,32 @@
                     };
             }
             return new object[0];            
+        }
+
+        private IEnumerable<object> GetScopes(ApiResourceDetail apiResource, UrlHelper url)
+        {
+            if (apiResource.ResourceScopes != null)
+            {
+                return from c in apiResource.ResourceScopes
+                        select new
+                        {
+                            Data = c,
+                            Links = new
+                            {
+                                update = url.RelativeLink(Constants.RouteNames.UpdateApiResourceScope, new
+                                {
+                                    subject = apiResource.Subject,
+                                    id = c.Id
+                                }),
+                                delete = url.RelativeLink(Constants.RouteNames.RemoveApiResourceScope, new
+                                {
+                                    subject = apiResource.Subject,
+                                    id = c.Id
+                                })
+                            }
+                        };
+            }
+            return new object[0];
         }
     }
 }

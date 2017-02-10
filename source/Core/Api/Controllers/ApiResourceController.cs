@@ -312,6 +312,79 @@
             return BadRequest(ModelState.ToError());
         }
 
+        [HttpPost, Route("{subject}/scope", Name = Constants.RouteNames.AddApiResourceScope)]
+        public async Task<IHttpActionResult> AddApiResourceScopeAsync(string subject, ApiResourceScopeValue model)
+        {
+            if (string.IsNullOrWhiteSpace(subject))
+            {
+                ModelState["subject.String"].Errors.Clear();
+                ModelState.AddModelError("", Messages.SubjectRequired);
+            }
+
+            if (model == null)
+            {
+                ModelState.AddModelError("", Messages.ApiResourceScopeNeeded);
+            }
+
+            if (ModelState.IsValid)
+            {
+                var result = await _service.AddScopeAsync(subject, model.Name);
+                if (result.IsSuccess)
+                {
+                    return NoContent();
+                }
+
+                ModelState.AddErrors(result);
+            }
+
+            return BadRequest(ModelState.ToError());
+        }
+
+        [HttpDelete, Route("{subject}/scope/{id}", Name = Constants.RouteNames.RemoveApiResourceScope)]
+        public async Task<IHttpActionResult> RemoveApiResourceScopeAsync(string subject, string id)
+        {
+            if (string.IsNullOrWhiteSpace(subject) || string.IsNullOrWhiteSpace(id))
+            {
+                return NotFound();
+            }
+
+            var result = await _service.RemoveScopeAsync(subject, id);
+            if (result.IsSuccess)
+            {
+                return NoContent();
+            }
+
+            return BadRequest(result.ToError());
+        }
+
+        [HttpPut, Route("{subject}/scope/{id}", Name = Constants.RouteNames.UpdateApiResourceScope)]
+        public async Task<IHttpActionResult> UpdateApiResourceScopeAsync(string subject, ApiResourceScopeValue model)
+        {
+            if (string.IsNullOrWhiteSpace(subject))
+            {
+                ModelState["subject.String"].Errors.Clear();
+                ModelState.AddModelError("", Messages.SubjectRequired);
+            }
+
+            if (model == null)
+            {
+                ModelState.AddModelError("", Messages.ApiResourceScopeNeeded);
+            }
+
+            if (ModelState.IsValid)
+            {
+                var result = await _service.UpdateScopeAsync(subject, model.Id, model.Name, model.Description, model.Emphasize, model.Required, model.ShowInDiscoveryDocument);
+                if (result.IsSuccess)
+                {
+                    return NoContent();
+                }
+
+                ModelState.AddErrors(result);
+            }
+
+            return BadRequest(ModelState.ToError());
+        }
+
         private IEnumerable<string> ValidateCreateProperties(ApiResourceMetaData apiResourceMetaData, IEnumerable<PropertyValue> properties)
         {
             if (apiResourceMetaData == null) throw new ArgumentNullException(nameof(apiResourceMetaData));

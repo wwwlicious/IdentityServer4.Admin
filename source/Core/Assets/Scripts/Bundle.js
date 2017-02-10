@@ -4463,6 +4463,19 @@ angular.module("ui.bootstrap",["ui.bootstrap.tpls","ui.bootstrap.datepicker","ui
                     .then(nop, errorHandler("Error updating Api Resource Secret"));
             };
 
+            svc.addScope = function(scopes, scope) {
+                return $http.post(scopes.links.create, scope)
+                            .then(nop, errorHandler("Error Adding Scope"));
+            };
+            svc.removeScope = function(scope) {
+                return $http.delete(scope.links.delete)
+                            .then(nop, errorHandler("Error Removing Api Resource Scope"));
+            };
+
+            svc.updateScope = function(scope) {
+                return $http.put(scope.links.update, scope.data)
+                            .then(nop, errorHandler("Error updating Api Resource Scope"));
+            };
         });
         return svc;
     }
@@ -5712,6 +5725,36 @@ angular.module("ui.bootstrap",["ui.bootstrap.tpls","ui.bootstrap.datepicker","ui
                 }, feedback.errorHandler);
         };
 
+        // Scopes
+        $scope.addApiResourceScope = function(scopes, scope) {
+            idAdmApiResources.addScope(scopes, scope)
+                .then(function() {
+                    feedback.message = "Api Resource Scope Added : " + scope.name;
+                    loadApiResource().then(function() {
+                        $scope.scope = scope.data;
+                    });
+                }, feedback.errorHandler);
+        }
+
+        $scope.updateApiResourceScope = function (scope) {
+            idAdmApiResources.updateScope(scope)
+                .then(function () {
+                    feedback.message = "Api Resource Scope Updated : " + scope.data.name;
+                    loadApiResource().then(function () {
+                        $scope.scope = scope.data;
+                    });
+                }, feedback.errorHandler);
+        };
+
+        $scope.removeApiResourceScope = function (scope) {
+            idAdmApiResources.removeSecret(scope)
+                .then(function () {
+                    feedback.message = "Api Resource Scope Removed : " + scope.data.name;
+                    loadApiResource().then(function () {
+                        $scope.scope = scope.data;
+                    });
+                }, feedback.errorHandler);
+        };
     }
     EditApiResourceCtrl.$inject = ["$scope", "idAdmApiResources", "$routeParams", "ttFeedback", "$location"];
     app.controller("EditApiResourceCtrl", EditApiResourceCtrl);

@@ -228,6 +228,36 @@
                 }, feedback.errorHandler);
         };
 
+        // Scopes
+        $scope.addApiResourceScope = function(scopes, scope) {
+            idAdmApiResources.addScope(scopes, scope)
+                .then(function() {
+                    feedback.message = "Api Resource Scope Added : " + scope.name;
+                    loadApiResource().then(function() {
+                        $scope.scope = scope.data;
+                    });
+                }, feedback.errorHandler);
+        }
+
+        $scope.updateApiResourceScope = function (scope) {
+            idAdmApiResources.updateScope(scope)
+                .then(function () {
+                    feedback.message = "Api Resource Scope Updated : " + scope.data.name;
+                    loadApiResource().then(function () {
+                        $scope.scope = scope.data;
+                    });
+                }, feedback.errorHandler);
+        };
+
+        $scope.removeApiResourceScope = function (scope) {
+            idAdmApiResources.removeSecret(scope)
+                .then(function () {
+                    feedback.message = "Api Resource Scope Removed : " + scope.data.name;
+                    loadApiResource().then(function () {
+                        $scope.scope = scope.data;
+                    });
+                }, feedback.errorHandler);
+        };
     }
     EditApiResourceCtrl.$inject = ["$scope", "idAdmApiResources", "$routeParams", "ttFeedback", "$location"];
     app.controller("EditApiResourceCtrl", EditApiResourceCtrl);

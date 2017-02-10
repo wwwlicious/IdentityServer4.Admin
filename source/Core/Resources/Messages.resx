@@ -216,4 +216,7 @@
   <data name="ApiResourceSecretNeeded" xml:space="preserve">
     <value>An api secret is needed</value>
   </data>
+  <data name="ApiResourceScopeNeeded" xml:space="preserve">
+    <value>An Api Resource Scope is required.</value>
+  </data>
 </root>

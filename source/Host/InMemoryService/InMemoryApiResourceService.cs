@@ -158,6 +158,15 @@
                     Value = x.Value,
                     Expiration = x.Expiration
                 });
+                result.ResourceScopes = inMemoryApiResource.Scopes.Select(x => new ApiResourceScopeValue
+                {
+                    Id = x.Id.ToString(),
+                    Name = x.Name,
+                    Description = x.Description,
+                    Emphasize = x.Emphasize,
+                    Required = x.Required,
+                    ShowInDiscoveryDocument = x.ShowInDiscoveryDocument
+                });
 
                 return Task.FromResult(new IdentityAdminResult<ApiResourceDetail>(result));
             }
@@ -339,6 +348,82 @@
                 if (existingSecret != null)
                 {
                     inMemoryApiResource.Secrets.Remove(existingSecret);
+                }
+                return Task.FromResult(IdentityAdminResult.Success);
+            }
+            return Task.FromResult(new IdentityAdminResult("Invalid subject"));
+        }
+
+        public Task<IdentityAdminResult> AddScopeAsync(string subject, string name)
+        {
+            int parsedSubject;
+            if (int.TryParse(subject, out parsedSubject))
+            {
+                var inMemoryApiResource = _apiResources.FirstOrDefault(p => p.Id == parsedSubject);
+                if (inMemoryApiResource == null)
+                {
+                    return Task.FromResult(new IdentityAdminResult("Invalid subject"));
+                }
+                var existingScopes = inMemoryApiResource.Scopes;
+                if (existingScopes.All(x => x.Name != name))
+                {
+                    inMemoryApiResource.Scopes.Add(new InMemoryApiResourceScope
+                    {
+                        Id = inMemoryApiResource.Secrets.Count + 1,
+                        Name = name,                        
+                        Emphasize = false,
+                        Required = false,
+                        ShowInDiscoveryDocument = true
+                    });
+                }
+                return Task.FromResult(IdentityAdminResult.Success);
+            }
+
+            return Task.FromResult(new IdentityAdminResult("Invalid subject"));
+        }
+
+        public Task<IdentityAdminResult> UpdateScopeAsync(string subject, string scopeSubject, string name, string description, bool emphasize, bool required, bool showInDiscoveryDocument)
+        {
+            int parsedSubject, parsedScopeSubject;
+            if (int.TryParse(subject, out parsedSubject) && int.TryParse(scopeSubject, out parsedScopeSubject))
+            {
+                var inMemoryApiResource = _apiResources.FirstOrDefault(p => p.Id == parsedSubject);
+                if (inMemoryApiResource == null)
+                {
+                    return Task.FromResult(new IdentityAdminResult("Invalid subject"));
+                }
+                var existingScope = inMemoryApiResource.Scopes.FirstOrDefault(p => p.Id == parsedScopeSubject);
+                if (existingScope != null)
+                {
+                    existingScope.Name = name;                    
+                    existingScope.Description = description;
+                    existingScope.Emphasize = emphasize;
+                    existingScope.Required = required;
+                    existingScope.ShowInDiscoveryDocument = showInDiscoveryDocument;
+
+                    return Task.FromResult(IdentityAdminResult.Success);
+                }
+                return Task.FromResult(new IdentityAdminResult("Not found"));
+            }
+
+            return Task.FromResult(new IdentityAdminResult("Invalid subject"));
+        }
+
+        public Task<IdentityAdminResult> RemoveScopeAsync(string subject, string id)
+        {
+            int parsedSubject;
+            int parsedScopeId;
+            if (int.TryParse(subject, out parsedSubject) && int.TryParse(id, out parsedScopeId))
+            {
+                var inMemoryApiResource = _apiResources.FirstOrDefault(p => p.Id == parsedSubject);
+                if (inMemoryApiResource == null)
+                {
+                    return Task.FromResult(new IdentityAdminResult("Invalid subject"));
+                }
+                var existingScope = inMemoryApiResource.Scopes.FirstOrDefault(p => p.Id == parsedScopeId);
+                if (existingScope != null)
+                {
+                    inMemoryApiResource.Scopes.Remove(existingScope);
                 }
                 return Task.FromResult(IdentityAdminResult.Success);
             }

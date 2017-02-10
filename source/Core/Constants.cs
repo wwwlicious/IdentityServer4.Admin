@@ -107,10 +107,13 @@ namespace IdentityAdmin
             public const string UpdateApiResourceProperty = "UpdateApiResourceProperty";
             public const string AddApiResourceClaim = "AddApiResourceClaim";
             public const string RemoveApiResourceClaim = "RemoveApiResourceClaim";
-
-            public const string RemoveApiResourceSecret = "RemoveApiResourceSecret";
             public const string UpdateApiResourceSecret = "UpdateApiResourceSecret";
             public const string AddApiResourceSecret = "AddApiResourceSecret";
+            public const string RemoveApiResourceSecret = "RemoveApiResourceSecret";
+
+            public const string UpdateApiResourceScope = "UpdateApiResourceScope";
+            public const string AddApiResourceScope = "AddApiResourceScope";
+            public const string RemoveApiResourceScope = "RemoveApiResourceScope";
 
             public const string Home = "Home";
             public const string Logout = "Logout";

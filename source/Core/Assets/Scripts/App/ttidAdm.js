@@ -463,6 +463,19 @@
                     .then(nop, errorHandler("Error updating Api Resource Secret"));
             };
 
+            svc.addScope = function(scopes, scope) {
+                return $http.post(scopes.links.create, scope)
+                            .then(nop, errorHandler("Error Adding Scope"));
+            };
+            svc.removeScope = function(scope) {
+                return $http.delete(scope.links.delete)
+                            .then(nop, errorHandler("Error Removing Api Resource Scope"));
+            };
+
+            svc.updateScope = function(scope) {
+                return $http.put(scope.links.update, scope.data)
+                            .then(nop, errorHandler("Error updating Api Resource Scope"));
+            };
         });
         return svc;
     }

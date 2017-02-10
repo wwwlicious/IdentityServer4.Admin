@@ -26,5 +26,9 @@
         Task<IdentityAdminResult> AddSecretAsync(string subject, string type, string value, string description, DateTime? expiration);
         Task<IdentityAdminResult> UpdateSecretAsync(string subject, string secretSubject, string type, string value, string description, DateTime? expiration);
         Task<IdentityAdminResult> RemoveSecretAsync(string subject, string id);
+
+        Task<IdentityAdminResult> AddScopeAsync(string subject, string name);
+        Task<IdentityAdminResult> UpdateScopeAsync(string subject, string scopeSubject, string name, string description, bool emphasize, bool required, bool showInDiscoveryDocument);
+        Task<IdentityAdminResult> RemoveScopeAsync(string subject, string id);
     }
 }
