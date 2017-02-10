@@ -28,6 +28,7 @@ using IdentityAdmin.Extensions;
 
 namespace IdentityAdmin.Api.Controllers
 {
+    using Models.ApiResource;
     using Models.IdentityResource;
 
     [NoCache]
@@ -91,6 +92,10 @@ namespace IdentityAdmin.Api.Controllers
             }
 
             links["apiresources"] = Url.RelativeLink(Constants.RouteNames.GetApiResources);
+            if (coreMeta.ApiResourceMetaData.SupportsCreate)
+            {
+                links["createApiResource"] = new CreateApiResourceLink(Url, coreMeta.ApiResourceMetaData);
+            }
             
             return Ok(new
             {

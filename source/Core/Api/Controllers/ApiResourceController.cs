@@ -1,6 +1,7 @@
 ﻿namespace IdentityAdmin.Api.Controllers
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Net;
     using System.Net.Http;
@@ -101,6 +102,38 @@
         [HttpPost, Route("", Name = Constants.RouteNames.CreateApiResource)]
         public async Task<IHttpActionResult> CreateApiResourceAsync(PropertyValue[] properties)
         {
+            var metadata = await GetCoreMetaDataAsync();
+            if (!metadata.SupportsCreate)
+            {
+                return MethodNotAllowed();
+            }
+            if (properties == null)
+            {
+                ModelState.AddModelError("", Messages.ApiResourceDataRequired);
+            }
+
+            var errors = ValidateCreateProperties(metadata, properties);
+            foreach (var error in errors)
+            {
+                ModelState.AddModelError("", error);
+            }
+
+            if (ModelState.IsValid)
+            {
+                var result = await _service.CreateAsync(properties);
+                if (result.IsSuccess)
+                {
+                    var url = Url.RelativeLink(Constants.RouteNames.GetApiResource, new { subject = result.Result.Subject });
+                    var resource = new
+                    {
+                        Data = new { subject = result.Result.Subject },
+                        Links = new { detail = url }
+                    };
+                    return Created(url, resource);
+                }
+
+                ModelState.AddErrors(result);
+            }
             return BadRequest("");
         }
 
@@ -160,6 +193,15 @@
             }
 
             return BadRequest(ModelState.ToError());
+        }
+
+        private IEnumerable<string> ValidateCreateProperties(ApiResourceMetaData apiResourceMetaData, IEnumerable<PropertyValue> properties)
+        {
+            if (apiResourceMetaData == null) throw new ArgumentNullException(nameof(apiResourceMetaData));
+            properties = properties ?? Enumerable.Empty<PropertyValue>();
+
+            var meta = apiResourceMetaData.CreateProperties;
+            return meta.Validate(properties);
         }
 
         private void ValidateUpdateProperty(ApiResourceMetaData apiResourceMetaData, string type, string value)

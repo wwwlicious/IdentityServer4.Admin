@@ -1,11 +1,14 @@
 ﻿namespace IdentityAdmin.Core
 {
+    using System.Collections.Generic;
     using System.Threading.Tasks;
     using ApiResource;
 
     public interface IApiResourceService
     {
         Task<ApiResourceMetaData> GetMetadataAsync();
+
+        Task<IdentityAdminResult<CreateResult>> CreateAsync(IEnumerable<PropertyValue> properties);
 
         Task<IdentityAdminResult<QueryResult<ApiResourceSummary>>> QueryAsync(string filter, int start, int count);
 

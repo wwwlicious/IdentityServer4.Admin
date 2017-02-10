@@ -423,6 +423,13 @@
                     .then(nop, errorHandler("Error Deleting Api Resource"));
             };
 
+            if (api.links.createApiResource) {
+                svc.createApiResource = function (properties) {
+                    return $http.post(api.links.createApiResource.href, properties)
+                        .then(mapResponseData, errorHandler("Error Creating Api Resource"));
+                };
+            }
+
             svc.setProperty = function (property) {
                 if (property.data === 0) {
                     property.data = "0";

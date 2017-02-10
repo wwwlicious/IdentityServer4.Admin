@@ -11,15 +11,15 @@
                 resolve: { apiResources: "idAdmApiResources" },
                 templateUrl: PathBase + '/assets/Templates.apiresources.list.html'
             })
-            //.when("/scopes/create", {
-            //    controller: 'NewScopeCtrl',
-            //    resolve: {
-            //        api: function (idAdmApi) {
-            //            return idAdmApi.get();
-            //        }
-            //    },
-            //    templateUrl: PathBase + '/assets/Templates.scopes.new.html'
-            //})
+            .when("/apiresources/create", {
+                controller: 'NewApiResourceCtrl',
+                resolve: {
+                    api: function (idAdmApi) {
+                        return idAdmApi.get();
+                    }
+                },
+                templateUrl: PathBase + '/assets/Templates.apiresources.new.html'
+            })
             .when("/apiresources/edit/:subject", {
                 controller: 'EditApiResourceCtrl',
                 resolve: { apiResources: "idAdmApiResources" },
@@ -66,39 +66,39 @@
     ListApiResourcesCtrl.$inject = ["$scope", "idAdmApiResources", "idAdmPager", "$routeParams", "$location"];
     app.controller("ListApiResourcesCtrl", ListApiResourcesCtrl);
 
-    //function NewScopeCtrl($scope, idAdmScopes, api, ttFeedback) {
-    //    var feedback = new ttFeedback();
-    //    $scope.feedback = feedback;
-    //    if (!api.links.createScope) {
-    //        feedback.errors = "Create Not Supported";
-    //        return;
-    //    }
-    //    else {
-    //        var properties = api.links.createScope.meta
-    //            .map(function (item) {
-    //                return {
-    //                    meta: item,
-    //                    data: item.dataType === 5 ? false : undefined
-    //                };
-    //            });
-    //        $scope.properties = properties;
-    //        $scope.create = function (properties) {
-    //            var props = properties.map(function (item) {
-    //                return {
-    //                    type: item.meta.type,
-    //                    value: item.data
-    //                };
-    //            });
-    //            idAdmScopes.createScope(props)
-    //                .then(function (result) {
-    //                    $scope.last = result;
-    //                    feedback.message = "Create Success";
-    //                }, feedback.errorHandler);
-    //        };
-    //    }
-    //}
-    //NewScopeCtrl.$inject = ["$scope", "idAdmScopes", "api", "ttFeedback"];
-    //app.controller("NewScopeCtrl", NewScopeCtrl);
+    function NewApiResourceCtrl($scope, idAdmApiResources, api, ttFeedback) {
+        var feedback = new ttFeedback();
+        $scope.feedback = feedback;
+        if (!api.links.createApiResource) {
+            feedback.errors = "Create Not Supported";
+            return;
+        }
+        else {
+            var properties = api.links.createApiResource.meta
+                .map(function (item) {
+                    return {
+                        meta: item,
+                        data: item.dataType === 5 ? false : undefined
+                    };
+                });
+            $scope.properties = properties;
+            $scope.create = function (properties) {
+                var props = properties.map(function (item) {
+                    return {
+                        type: item.meta.type,
+                        value: item.data
+                    };
+                });
+                idAdmApiResources.createApiResource(props)
+                    .then(function (result) {
+                        $scope.last = result;
+                        feedback.message = "Create Success";
+                    }, feedback.errorHandler);
+            };
+        }
+    }
+    NewApiResourceCtrl.$inject = ["$scope", "idAdmApiResources", "api", "ttFeedback"];
+    app.controller("NewApiResourceCtrl", NewApiResourceCtrl);
 
     function EditApiResourceCtrl($scope, idAdmApiResources, $routeParams, ttFeedback, $location) {
         var feedback = new ttFeedback();

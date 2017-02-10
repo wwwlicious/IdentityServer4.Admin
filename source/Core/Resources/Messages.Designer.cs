@@ -61,6 +61,15 @@ namespace IdentityAdmin.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Api Resource Data Required..
+        /// </summary>
+        public static string ApiResourceDataRequired {
+            get {
+                return ResourceManager.GetString("ApiResourceDataRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Claim data required..
         /// </summary>
         public static string ClaimDataRequired {
@@ -129,6 +138,15 @@ namespace IdentityAdmin.Resources {
         public static string EmailRequired {
             get {
                 return ResourceManager.GetString("EmailRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Identity Resource Data Required..
+        /// </summary>
+        public static string IdentityResourceDataRequired {
+            get {
+                return ResourceManager.GetString("IdentityResourceDataRequired", resourceCulture);
             }
         }
         

@@ -13,21 +13,10 @@
     public class InMemoryApiResourceService : IApiResourceService
     {
         private readonly ICollection<InMemoryApiResource> _apiResources;
-        public static MapperConfiguration Config;
-        public static IMapper Mapper;
 
         public InMemoryApiResourceService(ICollection<InMemoryApiResource> apiResources)
         {
             this._apiResources = apiResources;
-
-            Config = new MapperConfiguration(cfg => 
-            {
-
-
-                //cfg.CreateMap<InMemoryIdentityResource, Scope>();
-                //cfg.CreateMap<Scope, InMemoryIdentityResource>();
-            });
-            Mapper = Config.CreateMapper();
         }
 
         private ApiResourceMetaData _metadata;
@@ -36,10 +25,10 @@
         {
             if (_metadata == null)
             {
-                var updateIdentityResource = new List<PropertyMetadata>();
-                updateIdentityResource.AddRange(PropertyMetadata.FromType<InMemoryApiResource>());
+                var updateApiResource = new List<PropertyMetadata>();
+                updateApiResource.AddRange(PropertyMetadata.FromType<InMemoryApiResource>());
 
-                var createIdentityResource = new List<PropertyMetadata>
+                var createApiResource = new List<PropertyMetadata>
                 {
                     PropertyMetadata.FromProperty<InMemoryApiResource>(x => x.Name, "ApiResourceName", required: true),
                 };
@@ -48,17 +37,46 @@
                 {
                     SupportsCreate = true,
                     SupportsDelete = true,
-                    CreateProperties = createIdentityResource,
-                    UpdateProperties = updateIdentityResource
+                    CreateProperties = createApiResource,
+                    UpdateProperties = updateApiResource
                 };
             }
             return _metadata;
         }
 
-
         public Task<ApiResourceMetaData> GetMetadataAsync()
         {
             return Task.FromResult(GetMetadata());
+        }
+
+        public Task<IdentityAdminResult<CreateResult>> CreateAsync(IEnumerable<PropertyValue> properties)
+        {
+            var ApiResourceNameClaim = properties.Single(x => x.Type == "ApiResourceName");
+
+            var ApiResourceName = ApiResourceNameClaim.Value;
+
+            string[] exclude = { "ApiResourceName" };
+            var otherProperties = properties.Where(x => !exclude.Contains(x.Type)).ToArray();
+
+            var metadata = GetMetadata();
+            var createProps = metadata.CreateProperties;
+            var inMemoryApiResource = new InMemoryApiResource
+            {
+                Id = _apiResources.Count + 1,
+                Name = ApiResourceName,
+                Enabled = true
+            };
+
+            foreach (var prop in otherProperties)
+            {
+                var propertyResult = SetProperty(createProps, inMemoryApiResource, prop.Type, prop.Value);
+                if (!propertyResult.IsSuccess)
+                {
+                    return Task.FromResult(new IdentityAdminResult<CreateResult>(propertyResult.Errors.ToArray()));
+                }
+            }
+            _apiResources.Add(inMemoryApiResource);
+            return Task.FromResult(new IdentityAdminResult<CreateResult>(new CreateResult { Subject = inMemoryApiResource.Id.ToString() }));
         }
 
         public Task<IdentityAdminResult<QueryResult<ApiResourceSummary>>> QueryAsync(string filter, int start, int count)
@@ -150,14 +168,14 @@
                 }
                 var meta = GetMetadata();
 
-                SetScopeProperty(meta.UpdateProperties, inMemoryApiResource, type, value);
+                SetProperty(meta.UpdateProperties, inMemoryApiResource, type, value);
 
                 return Task.FromResult(IdentityAdminResult.Success);
             }
             return Task.FromResult(new IdentityAdminResult("Invalid subject"));
         }
 
-        protected IdentityAdminResult SetScopeProperty(IEnumerable<PropertyMetadata> propsMeta, InMemoryApiResource apiResource, string type, string value)
+        protected IdentityAdminResult SetProperty(IEnumerable<PropertyMetadata> propsMeta, InMemoryApiResource apiResource, string type, string value)
         {
             IdentityAdminResult result;
             if (propsMeta.TrySet(apiResource, type, value, out result))

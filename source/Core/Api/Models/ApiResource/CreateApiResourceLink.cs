@@ -9,7 +9,7 @@
     {
         public CreateApiResourceLink(UrlHelper url, ApiResourceMetaData apiResourceMetaData)
         {
-            this["href"] = url.RelativeLink(Constants.RouteNames.CreateIdentityResource);
+            this["href"] = url.RelativeLink(Constants.RouteNames.CreateApiResource);
             this["meta"] = apiResourceMetaData.CreateProperties;
         }
     }

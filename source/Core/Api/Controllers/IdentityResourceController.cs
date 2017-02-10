@@ -109,7 +109,7 @@
             }
             if (properties == null)
             {
-                ModelState.AddModelError("", Messages.ClientDataRequired);
+                ModelState.AddModelError("", Messages.IdentityResourceDataRequired);
             }
 
             var errors = ValidateCreateProperties(metadata, properties);
