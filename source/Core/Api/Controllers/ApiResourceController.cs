@@ -338,7 +338,7 @@
             }
 
             return BadRequest(ModelState.ToError());
-        }
+        }        
 
         [HttpDelete, Route("{subject}/scope/{id}", Name = Constants.RouteNames.RemoveApiResourceScope)]
         public async Task<IHttpActionResult> RemoveApiResourceScopeAsync(string subject, string id)
@@ -383,6 +383,50 @@
             }
 
             return BadRequest(ModelState.ToError());
+        }
+
+        [HttpPost, Route("{subject}/scope/{id}/claim", Name = Constants.RouteNames.AddApiResourceScopeClaim)]
+        public async Task<IHttpActionResult> AddApiResourceScopeClaimAsync(string subject, string id, ApiResourceScopeClaimValue model)
+        {
+            if (string.IsNullOrWhiteSpace(subject) || string.IsNullOrWhiteSpace(id))
+            {
+                return NotFound();
+            }
+
+            if (model == null)
+            {
+                ModelState.AddModelError("", Messages.ApiResourceScopeClaimNeeded);
+            }
+
+            if (ModelState.IsValid)
+            {
+                var result = await _service.AddScopeClaimAsync(subject, id, model.Type);
+                if (result.IsSuccess)
+                {
+                    return NoContent();
+                }
+
+                ModelState.AddErrors(result);
+            }
+
+            return BadRequest(ModelState.ToError());
+        }
+
+        [HttpDelete, Route("{subject}/scope/{id}/claim/{claimId}", Name = Constants.RouteNames.RemoveApiResourceScopeClaim)]
+        public async Task<IHttpActionResult> RemoveApiResourceScopeClaimAsync(string subject, string id, string claimId)
+        {
+            if (string.IsNullOrWhiteSpace(subject) || string.IsNullOrWhiteSpace(id) || string.IsNullOrWhiteSpace(claimId))
+            {
+                return NotFound();
+            }
+
+            var result = await _service.RemoveScopeClaimAsync(subject, id, claimId);
+            if (result.IsSuccess)
+            {
+                return NoContent();
+            }
+
+            return BadRequest(result.ToError());
         }
 
         private IEnumerable<string> ValidateCreateProperties(ApiResourceMetaData apiResourceMetaData, IEnumerable<PropertyValue> properties)

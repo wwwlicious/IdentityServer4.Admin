@@ -144,6 +144,7 @@
     <Compile Include="Api\Models\Client\CreateClientLink.cs" />
     <Compile Include="Api\Models\ErrorModel.cs" />
     <Compile Include="Api\Models\IdentityResource\CreateIdentityResourceLink.cs" />
+    <Compile Include="Core\ApiResource\ApiResourceScopeClaimValue.cs" />
     <Compile Include="Core\ApiResource\ApiResourceScopeValue.cs" />
     <Compile Include="Core\ApiResource\ApiResourceSecretValue.cs" />
     <Compile Include="Core\IdentityResource\BaseIdentityResourceValue.cs" />

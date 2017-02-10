@@ -30,5 +30,7 @@
         Task<IdentityAdminResult> AddScopeAsync(string subject, string name);
         Task<IdentityAdminResult> UpdateScopeAsync(string subject, string scopeSubject, string name, string description, bool emphasize, bool required, bool showInDiscoveryDocument);
         Task<IdentityAdminResult> RemoveScopeAsync(string subject, string id);
+        Task<IdentityAdminResult> AddScopeClaimAsync(string subject, string id, string type);    
+        Task<IdentityAdminResult> RemoveScopeClaimAsync(string subject, string id, string scopeId);
     }
 }

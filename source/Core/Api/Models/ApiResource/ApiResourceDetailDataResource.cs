@@ -129,6 +129,7 @@
                         select new
                         {
                             Data = c,
+                            Claims = GetScopeClaims(apiResource, c, url),
                             Links = new
                             {
                                 update = url.RelativeLink(Constants.RouteNames.UpdateApiResourceScope, new
@@ -140,9 +141,36 @@
                                 {
                                     subject = apiResource.Subject,
                                     id = c.Id
+                                }),
+                                addClaim = url.RelativeLink(Constants.RouteNames.AddApiResourceScopeClaim, new
+                                {
+                                    subject = apiResource.Subject,
+                                    id = c.Id
                                 })
                             }
                         };
+            }
+            return new object[0];
+        }
+
+        private IEnumerable<object> GetScopeClaims(ApiResourceDetail apiResource, ApiResourceScopeValue apiResourceScope, UrlHelper url)
+        {
+            if (apiResourceScope.Claims != null)
+            {
+                return from c in apiResourceScope.Claims
+                    select new
+                    {
+                        Data = c,
+                        Links = new
+                        {
+                            delete = url.RelativeLink(Constants.RouteNames.RemoveApiResourceScopeClaim, new
+                            {
+                                subject = apiResource.Subject,
+                                id = apiResourceScope.Id,
+                                claimId = c.Id
+                            })
+                        }
+                    };
             }
             return new object[0];
         }

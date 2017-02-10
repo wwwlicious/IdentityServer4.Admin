@@ -1,5 +1,6 @@
 ﻿namespace IdentityAdmin.Core.ApiResource
 {
+    using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
 
     public class ApiResourceScopeValue : BaseApiResourceValue
@@ -14,5 +15,7 @@
         public bool Required { get; set; }
 
         public bool ShowInDiscoveryDocument { get; set; }
+
+        public IEnumerable<ApiResourceScopeClaimValue> Claims { get; set; }
     }
 }

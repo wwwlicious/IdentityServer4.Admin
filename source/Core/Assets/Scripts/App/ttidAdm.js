@@ -476,6 +476,16 @@
                 return $http.put(scope.links.update, scope.data)
                             .then(nop, errorHandler("Error updating Api Resource Scope"));
             };
+
+            svc.addScopeClaim = function(scope, claim) {
+                return $http.post(scope.links.addClaim, claim)
+                            .then(nop, errorHandler("Error updating Api Resource Scope Claim"));
+            };
+
+            svc.removeScopeClaim = function(claim) {
+                return $http.delete(claim.links.delete)
+                            .then(nop, errorHandler("Error Removing Api Resource Scope Claim"));
+            };
         });
         return svc;
     }

@@ -114,6 +114,8 @@ namespace IdentityAdmin
             public const string UpdateApiResourceScope = "UpdateApiResourceScope";
             public const string AddApiResourceScope = "AddApiResourceScope";
             public const string RemoveApiResourceScope = "RemoveApiResourceScope";
+            public const string AddApiResourceScopeClaim = "AddApiResourceScopeClaim";
+            public const string RemoveApiResourceScopeClaim = "RemoveApiResourceScopeClaim";
 
             public const string Home = "Home";
             public const string Logout = "Logout";

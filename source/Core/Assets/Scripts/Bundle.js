@@ -4476,6 +4476,16 @@ angular.module("ui.bootstrap",["ui.bootstrap.tpls","ui.bootstrap.datepicker","ui
                 return $http.put(scope.links.update, scope.data)
                             .then(nop, errorHandler("Error updating Api Resource Scope"));
             };
+
+            svc.addScopeClaim = function(scope, claim) {
+                return $http.post(scope.links.addClaim, claim)
+                            .then(nop, errorHandler("Error updating Api Resource Scope Claim"));
+            };
+
+            svc.removeScopeClaim = function(claim) {
+                return $http.delete(claim.links.delete)
+                            .then(nop, errorHandler("Error Removing Api Resource Scope Claim"));
+            };
         });
         return svc;
     }
@@ -5750,6 +5760,27 @@ angular.module("ui.bootstrap",["ui.bootstrap.tpls","ui.bootstrap.datepicker","ui
             idAdmApiResources.removeSecret(scope)
                 .then(function () {
                     feedback.message = "Api Resource Scope Removed : " + scope.data.name;
+                    loadApiResource().then(function () {
+                        $scope.scope = scope.data;
+                    });
+                }, feedback.errorHandler);
+        };
+
+        // Scope Claims
+        $scope.addApiResourceScopeClaim = function(scope, claim) {
+            idAdmApiResources.addScopeClaim(scope, claim)
+                .then(function () {
+                    feedback.message = "Api Resource Scope : " + scope.data.name + ", added claim : " + claim.type;
+                    loadApiResource().then(function () {
+                        $scope.scope = scope.data;
+                    });
+                }, feedback.errorHandler);
+        };
+
+        $scope.removeApiResourceScopeClaim = function(scope, claim) {
+            idAdmApiResources.removeScopeClaim(claim)
+                .then(function() {
+                    feedback.message = "Api Resource Scope : " + scope.data.name + ", removed claim : " + claim.data.type;
                     loadApiResource().then(function () {
                         $scope.scope = scope.data;
                     });

@@ -165,7 +165,12 @@
                     Description = x.Description,
                     Emphasize = x.Emphasize,
                     Required = x.Required,
-                    ShowInDiscoveryDocument = x.ShowInDiscoveryDocument
+                    ShowInDiscoveryDocument = x.ShowInDiscoveryDocument,
+                    Claims = x.Claims.Select(y => new ApiResourceScopeClaimValue
+                    {
+                        Id = y.Id.ToString(),
+                        Type = y.Type
+                    })
                 });
 
                 return Task.FromResult(new IdentityAdminResult<ApiResourceDetail>(result));
@@ -425,6 +430,65 @@
                 {
                     inMemoryApiResource.Scopes.Remove(existingScope);
                 }
+                return Task.FromResult(IdentityAdminResult.Success);
+            }
+            return Task.FromResult(new IdentityAdminResult("Invalid subject"));
+        }
+
+        public Task<IdentityAdminResult> AddScopeClaimAsync(string subject, string id, string type)
+        {
+            int parsedSubject;
+            int parsedScopeId;
+            if (int.TryParse(subject, out parsedSubject) && int.TryParse(id, out parsedScopeId))
+            {
+                var inMemoryApiResource = _apiResources.FirstOrDefault(p => p.Id == parsedSubject);
+                if (inMemoryApiResource == null)
+                {
+                    return Task.FromResult(new IdentityAdminResult("Invalid subject"));
+                }
+                var scope = inMemoryApiResource.Scopes.FirstOrDefault(p => p.Id == parsedScopeId);
+                if (scope == null)
+                {
+                    return Task.FromResult(new IdentityAdminResult("Invalid subject"));
+                }
+                if (scope.Claims.Any(p => p.Type == type))
+                {
+                    return Task.FromResult(new IdentityAdminResult("Invalid scope"));
+                }
+                scope.Claims.Add(new InMemoryApiResourceScopeClaim
+                {
+                    Id = scope.Claims.Count + 1,
+                    Type = type
+                });
+
+                return Task.FromResult(IdentityAdminResult.Success);
+            }
+            return Task.FromResult(new IdentityAdminResult("Invalid subject"));
+        }
+
+        public Task<IdentityAdminResult> RemoveScopeClaimAsync(string subject, string id, string scopeId)
+        {
+            int parsedSubject;
+            int parsedScopeId;
+            int parsedScopeClaimId;
+            if (int.TryParse(subject, out parsedSubject) && int.TryParse(id, out parsedScopeId) && int.TryParse(scopeId, out parsedScopeClaimId))
+            {
+                var inMemoryApiResource = _apiResources.FirstOrDefault(p => p.Id == parsedSubject);
+                if (inMemoryApiResource == null)
+                {
+                    return Task.FromResult(new IdentityAdminResult("Invalid subject"));
+                }
+                var scope = inMemoryApiResource.Scopes.FirstOrDefault(p => p.Id == parsedScopeId);
+                if (scope == null)
+                {
+                    return Task.FromResult(new IdentityAdminResult("Invalid subject"));
+                }
+                var scopeClaim = scope.Claims.FirstOrDefault(p => p.Id == parsedScopeClaimId);
+                if (scopeClaim == null)
+                {
+                    return Task.FromResult(new IdentityAdminResult("Invalid subject"));
+                }
+                scope.Claims.Remove(scopeClaim);
                 return Task.FromResult(IdentityAdminResult.Success);
             }
             return Task.FromResult(new IdentityAdminResult("Invalid subject"));

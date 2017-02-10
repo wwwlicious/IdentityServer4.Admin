@@ -219,4 +219,7 @@
   <data name="ApiResourceScopeNeeded" xml:space="preserve">
     <value>An Api Resource Scope is required.</value>
   </data>
+  <data name="ApiResourceScopeClaimNeeded" xml:space="preserve">
+    <value>An Api Resource Scope Claim is required.</value>
+  </data>
 </root>

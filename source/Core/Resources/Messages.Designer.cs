@@ -70,6 +70,15 @@ namespace IdentityAdmin.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to An Api Resource Scope Claim is required..
+        /// </summary>
+        public static string ApiResourceScopeClaimNeeded {
+            get {
+                return ResourceManager.GetString("ApiResourceScopeClaimNeeded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to An Api Resource Scope is required..
         /// </summary>
         public static string ApiResourceScopeNeeded {

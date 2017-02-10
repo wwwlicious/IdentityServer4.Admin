@@ -258,6 +258,27 @@
                     });
                 }, feedback.errorHandler);
         };
+
+        // Scope Claims
+        $scope.addApiResourceScopeClaim = function(scope, claim) {
+            idAdmApiResources.addScopeClaim(scope, claim)
+                .then(function () {
+                    feedback.message = "Api Resource Scope : " + scope.data.name + ", added claim : " + claim.type;
+                    loadApiResource().then(function () {
+                        $scope.scope = scope.data;
+                    });
+                }, feedback.errorHandler);
+        };
+
+        $scope.removeApiResourceScopeClaim = function(scope, claim) {
+            idAdmApiResources.removeScopeClaim(claim)
+                .then(function() {
+                    feedback.message = "Api Resource Scope : " + scope.data.name + ", removed claim : " + claim.data.type;
+                    loadApiResource().then(function () {
+                        $scope.scope = scope.data;
+                    });
+                }, feedback.errorHandler);
+        };
     }
     EditApiResourceCtrl.$inject = ["$scope", "idAdmApiResources", "$routeParams", "ttFeedback", "$location"];
     app.controller("EditApiResourceCtrl", EditApiResourceCtrl);
