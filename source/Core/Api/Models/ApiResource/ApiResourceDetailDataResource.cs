@@ -46,30 +46,70 @@
                 }
             }
 
+            this["Claims"] = new
+            {
+                Data = GetClaims(apiResource, url).ToArray(),
+                Links = new
+                {
+                    create = url.RelativeLink(Constants.RouteNames.AddApiResourceClaim, new { subject = apiResource.Subject })
+                }
+            };
+
+            this["Secrets"] = new
+            {
+                Data = GetSecrets(apiResource, url).ToArray(),
+                Links = new
+                {
+                    create = url.RelativeLink(Constants.RouteNames.AddApiResourceSecret, new { subject = apiResource.Subject })
+                }
+            };
+        }
+
+        private IEnumerable<object> GetClaims(ApiResourceDetail apiResource, UrlHelper url)
+        {
             if (apiResource.ResourceClaims != null)
             {
-                var identityResourceClaims = from c in apiResource.ResourceClaims.ToArray()
-                                             select new
-                                             {
-                                                 Data = c,
-                                                 Links = new
-                                                 {
-                                                     delete = url.RelativeLink(Constants.RouteNames.RemoveApiResourceClaim, new
-                                                     {
-                                                         subject = apiResource.Subject,
-                                                         id = c.Id
-                                                     })
-                                                 }
-                                             };
-                this["Claims"] = new
-                {
-                    Data = identityResourceClaims.ToArray(),
-                    Links = new
+                return from c in apiResource.ResourceClaims.ToArray()
+                    select new
                     {
-                        create = url.RelativeLink(Constants.RouteNames.AddApiResourceClaim, new { subject = apiResource.Subject })
-                    }
-                };
+                        Data = c,
+                        Links = new
+                        {
+                            delete = url.RelativeLink(Constants.RouteNames.RemoveApiResourceClaim, new
+                            {
+                                subject = apiResource.Subject,
+                                id = c.Id
+                            })
+                        }
+                    };
             }
+            return new object[0];
+        }
+
+        private IEnumerable<object> GetSecrets(ApiResourceDetail apiResource, UrlHelper url)
+        {
+            if (apiResource.ResourceSecrets != null)
+            {
+                return from c in apiResource.ResourceSecrets
+                    select new
+                    {
+                        Data = c,
+                        Links = new
+                        {
+                            update = url.RelativeLink(Constants.RouteNames.UpdateApiResourceSecret, new
+                            {
+                               subject = apiResource.Subject,
+                               id = c.Id 
+                            }),
+                            delete = url.RelativeLink(Constants.RouteNames.RemoveApiResourceSecret, new
+                            {
+                                subject = apiResource.Subject,
+                                id = c.Id
+                            })
+                        }
+                    };
+            }
+            return new object[0];            
         }
     }
 }

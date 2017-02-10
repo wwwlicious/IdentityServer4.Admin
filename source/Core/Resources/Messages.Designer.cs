@@ -70,6 +70,15 @@ namespace IdentityAdmin.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to An api secret is needed.
+        /// </summary>
+        public static string ApiResourceSecretNeeded {
+            get {
+                return ResourceManager.GetString("ApiResourceSecretNeeded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Claim data required..
         /// </summary>
         public static string ClaimDataRequired {

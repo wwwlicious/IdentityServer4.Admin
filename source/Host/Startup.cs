@@ -25,7 +25,6 @@ using IdentityAdmin.Host.InMemoryService;
 using IdentityAdmin.Logging;
 
 [assembly: OwinStartup(typeof (StartupWithLocalhostSecurity))]
-
 namespace IdentityAdmin.Host
 {
     public class StartupWithLocalhostSecurity

@@ -150,6 +150,14 @@
                     Id = x.Id.ToString(),
                     Type = x.Type
                 });
+                result.ResourceSecrets = inMemoryApiResource.Secrets.Select(x => new ApiResourceSecretValue
+                {
+                    Id = x.Id.ToString(),
+                    Type = x.Type,
+                    Description = x.Description,
+                    Value = x.Value,
+                    Expiration = x.Expiration
+                });
 
                 return Task.FromResult(new IdentityAdminResult<ApiResourceDetail>(result));
             }
@@ -252,6 +260,85 @@
                 if (existingClaim != null)
                 {
                     apiResource.Claims.Remove(existingClaim);
+                }
+                return Task.FromResult(IdentityAdminResult.Success);
+            }
+            return Task.FromResult(new IdentityAdminResult("Invalid subject"));
+        }
+
+        public Task<IdentityAdminResult> AddSecretAsync(string subject, string type, string value, string description, DateTime? expiration)
+        {
+            int parsedSubject;
+            if (int.TryParse(subject, out parsedSubject))
+            {
+                var inMemoryApiResource = _apiResources.FirstOrDefault(p => p.Id == parsedSubject);
+                if (inMemoryApiResource == null)
+                {
+                    return Task.FromResult(new IdentityAdminResult("Invalid subject"));
+                }
+                var existingSecrets = inMemoryApiResource.Secrets;
+                if (!existingSecrets.Any(x => x.Type == type && x.Value == value))
+                {
+                    inMemoryApiResource.Secrets.Add(new InMemoryApiResourceSecret
+                    {
+                        Id = inMemoryApiResource.Secrets.Count + 1,
+                        Type = type,
+                        Value = value,
+                        Description = description,
+                        Expiration = expiration
+                    });
+                }
+                return Task.FromResult(IdentityAdminResult.Success);
+            }
+
+            return Task.FromResult(new IdentityAdminResult("Invalid subject"));
+        }
+
+        public Task<IdentityAdminResult> UpdateSecretAsync(string subject, string secretSubject, string type, string value, string description, DateTime? expiration)
+        {
+            int parsedSubject, parsedSecretSubject;
+            if (int.TryParse(subject, out parsedSubject) && int.TryParse(secretSubject, out parsedSecretSubject))
+            {
+                var inMemoryApiResource = _apiResources.FirstOrDefault(p => p.Id == parsedSubject);
+                if (inMemoryApiResource == null)
+                {
+                    return Task.FromResult(new IdentityAdminResult("Invalid subject"));
+                }
+                var existingSecret = inMemoryApiResource.Secrets.FirstOrDefault(p => p.Id == parsedSecretSubject);
+                if (existingSecret != null)
+                {
+                    existingSecret.Value = value;
+                    existingSecret.Type = type;
+                    existingSecret.Description = description;
+                    if (expiration.HasValue)
+                    {
+                        //Save as new DateTimeOffset(expiration.Value)
+                        existingSecret.Expiration = expiration.Value;
+                    }
+
+                    return Task.FromResult(IdentityAdminResult.Success);
+                }
+                return Task.FromResult(new IdentityAdminResult("Not found"));
+            }
+
+            return Task.FromResult(new IdentityAdminResult("Invalid subject"));
+        }
+
+        public Task<IdentityAdminResult> RemoveSecretAsync(string subject, string id)
+        {
+            int parsedSubject;
+            int parsedSecretId;
+            if (int.TryParse(subject, out parsedSubject) && int.TryParse(id, out parsedSecretId))
+            {
+                var inMemoryApiResource = _apiResources.FirstOrDefault(p => p.Id == parsedSubject);
+                if (inMemoryApiResource == null)
+                {
+                    return Task.FromResult(new IdentityAdminResult("Invalid subject"));
+                }
+                var existingSecret = inMemoryApiResource.Secrets.FirstOrDefault(p => p.Id == parsedSecretId);
+                if (existingSecret != null)
+                {
+                    inMemoryApiResource.Secrets.Remove(existingSecret);
                 }
                 return Task.FromResult(IdentityAdminResult.Success);
             }

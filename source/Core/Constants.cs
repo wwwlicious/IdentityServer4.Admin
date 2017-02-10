@@ -18,6 +18,8 @@ using System;
 
 namespace IdentityAdmin
 {
+    using Newtonsoft.Json.Serialization;
+
     public class Constants
     {
         public const string LocalAuthenticationType = "idAdmin.Local";
@@ -105,6 +107,10 @@ namespace IdentityAdmin
             public const string UpdateApiResourceProperty = "UpdateApiResourceProperty";
             public const string AddApiResourceClaim = "AddApiResourceClaim";
             public const string RemoveApiResourceClaim = "RemoveApiResourceClaim";
+
+            public const string RemoveApiResourceSecret = "RemoveApiResourceSecret";
+            public const string UpdateApiResourceSecret = "UpdateApiResourceSecret";
+            public const string AddApiResourceSecret = "AddApiResourceSecret";
 
             public const string Home = "Home";
             public const string Logout = "Logout";

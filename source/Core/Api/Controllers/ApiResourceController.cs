@@ -239,6 +239,79 @@
             return BadRequest(result.ToError());
         }
 
+        [HttpPost, Route("{subject}/secret", Name = Constants.RouteNames.AddApiResourceSecret)]
+        public async Task<IHttpActionResult> AddApiResourceSecretAsync(string subject, ApiResourceSecretValue model)
+        {
+            if (string.IsNullOrWhiteSpace(subject))
+            {
+                ModelState["subject.String"].Errors.Clear();
+                ModelState.AddModelError("", Messages.SubjectRequired);
+            }
+
+            if (model == null)
+            {
+                ModelState.AddModelError("", Messages.ApiResourceSecretNeeded);
+            }
+
+            if (ModelState.IsValid)
+            {
+                var result = await _service.AddSecretAsync(subject, model.Type, model.Value, model.Description, model.Expiration);
+                if (result.IsSuccess)
+                {
+                    return NoContent();
+                }
+
+                ModelState.AddErrors(result);
+            }
+
+            return BadRequest(ModelState.ToError());
+        }
+
+        [HttpDelete, Route("{subject}/secret/{id}", Name = Constants.RouteNames.RemoveApiResourceSecret)]
+        public async Task<IHttpActionResult> RemoveApiResourceSecretAsync(string subject, string id)
+        {
+            if (string.IsNullOrWhiteSpace(subject) || string.IsNullOrWhiteSpace(id))
+            {
+                return NotFound();
+            }
+
+            var result = await _service.RemoveSecretAsync(subject, id);
+            if (result.IsSuccess)
+            {
+                return NoContent();
+            }
+
+            return BadRequest(result.ToError());
+        }
+
+        [HttpPut, Route("{subject}/secret/{id}", Name = Constants.RouteNames.UpdateApiResourceSecret)]
+        public async Task<IHttpActionResult> UpdateApiResourceSecretAsync(string subject, ApiResourceSecretValue model)
+        {
+            if (string.IsNullOrWhiteSpace(subject))
+            {
+                ModelState["subject.String"].Errors.Clear();
+                ModelState.AddModelError("", Messages.SubjectRequired);
+            }
+
+            if (model == null)
+            {
+                ModelState.AddModelError("", Messages.ApiResourceSecretNeeded);
+            }
+
+            if (ModelState.IsValid)
+            {
+                var result = await _service.UpdateSecretAsync(subject, model.Id, model.Type, model.Value, model.Description, model.Expiration);
+                if (result.IsSuccess)
+                {
+                    return NoContent();
+                }
+
+                ModelState.AddErrors(result);
+            }
+
+            return BadRequest(ModelState.ToError());
+        }
+
         private IEnumerable<string> ValidateCreateProperties(ApiResourceMetaData apiResourceMetaData, IEnumerable<PropertyValue> properties)
         {
             if (apiResourceMetaData == null) throw new ArgumentNullException(nameof(apiResourceMetaData));

@@ -1,5 +1,6 @@
 ﻿namespace IdentityAdmin.Core
 {
+    using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using ApiResource;
@@ -21,5 +22,9 @@
         Task<IdentityAdminResult> AddClaimAsync(string subject, string type);
 
         Task<IdentityAdminResult> RemoveClaimAsync(string subject, string id);
+
+        Task<IdentityAdminResult> AddSecretAsync(string subject, string type, string value, string description, DateTime? expiration);
+        Task<IdentityAdminResult> UpdateSecretAsync(string subject, string secretSubject, string type, string value, string description, DateTime? expiration);
+        Task<IdentityAdminResult> RemoveSecretAsync(string subject, string id);
     }
 }

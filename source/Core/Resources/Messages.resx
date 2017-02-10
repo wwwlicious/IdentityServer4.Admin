@@ -213,4 +213,7 @@
   <data name="UsernameRequired" xml:space="preserve">
     <value>Username is required.</value>
   </data>
+  <data name="ApiResourceSecretNeeded" xml:space="preserve">
+    <value>An api secret is needed</value>
+  </data>
 </root>

@@ -450,6 +450,19 @@
                     .then(nop, errorHandler("Error Removing Claim"));
             };
 
+            svc.addSecret = function (secrets, secret) {
+                return $http.post(secrets.links.create, secret)
+                    .then(nop, errorHandler("Error Adding Api Resource Secret"));
+            };
+            svc.removeSecret = function (secret) {
+                return $http.delete(secret.links.delete)
+                    .then(nop, errorHandler("Error Removing Api Resource Secret"));
+            };
+            svc.updateSecret = function (secret) {
+                return $http.put(secret.links.update, secret.data)
+                    .then(nop, errorHandler("Error updating Api Resource Secret"));
+            };
+
         });
         return svc;
     }
