@@ -65,15 +65,12 @@
                     <!-- Dropdown level 1 -->
                     <div id="dropdown-scopes" class="panel-collapse collapse">
                         <div class="panel-body">
-                            <ul class="nav navbar-nav">
-                                <li ng-show="layout.links.clients"><a href="#/scopes/list">All Scopes</a></li>
-                                <li ng-show="layout.links.clients"><a href="#/scopes/create">New Scope</a></li>
+                            <ul class="nav navbar-nav">                               
+                                <li ng-show="layout.links.identityresources"><a href="#/identityresources/list">All Identity Resources</a></li>
+                                <li ng-show="layout.links.identityresources"><a href="#/identityresources/create">New Identity Resource</a></li>
                                 
-                                <li ng-show="layout.links.clients"><a href="#/identityresources/list">All Identity Resources</a></li>
-                                <li ng-show="layout.links.clients"><a href="#/identityresources/create">New Identity Resource</a></li>
-                                
-                                <li ng-show="layout.links.clients"><a href="#/apiresources/list">All Api Resources</a></li>
-                                <li ng-show="layout.links.clients"><a href="#/apiresources/create">New Api Resource</a></li>
+                                <li ng-show="layout.links.apiresources"><a href="#/apiresources/list">All Api Resources</a></li>
+                                <li ng-show="layout.links.apiresources"><a href="#/apiresources/create">New Api Resource</a></li>
                             </ul>
                         </div>
                     </div>

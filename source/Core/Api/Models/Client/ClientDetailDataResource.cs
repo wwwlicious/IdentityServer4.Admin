@@ -25,7 +25,7 @@ namespace IdentityAdmin.Api.Models.Client
 {
     public class ClientDetailDataResource : Dictionary<string, object>
     {
-        public ClientDetailDataResource(ClientDetail client, UrlHelper url, IdentityAdminMetadata idmAdminMeta)
+        public ClientDetailDataResource(ClientDetail client, UrlHelper url, ClientMetaData idmAdminMeta)
         {
             if (client == null) throw new ArgumentNullException("client");
             if (url == null) throw new ArgumentNullException("url");
@@ -40,7 +40,7 @@ namespace IdentityAdmin.Api.Models.Client
                 var props =
                     from p in client.Properties
                     let m =
-                        (from m in idmAdminMeta.ClientMetaData.UpdateProperties where m.Type == p.Type select m).SingleOrDefault
+                        (from m in idmAdminMeta.UpdateProperties where m.Type == p.Type select m).SingleOrDefault
                             ()
                     where m != null
                     select new

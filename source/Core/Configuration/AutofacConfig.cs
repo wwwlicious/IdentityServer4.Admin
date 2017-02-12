@@ -34,7 +34,7 @@ namespace IdentityAdmin.Configuration
             var builder = new ContainerBuilder();
 
             builder.RegisterInstance(config);
-            builder.Register(config.Factory.IdentityAdminService);
+            builder.Register(config.Factory.ClientService);
             builder.Register(config.Factory.IdentityResourceService);
             builder.Register(config.Factory.ApiResourceService);
             builder.Register(c => new OwinEnvironmentService(c.Resolve<IOwinContext>()));

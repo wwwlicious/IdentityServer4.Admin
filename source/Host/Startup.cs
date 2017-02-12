@@ -15,7 +15,6 @@
  */
 
 using System.Collections.Generic;
-using System.Web.Security;
 using Owin;
 using Microsoft.Owin;
 using IdentityAdmin.Configuration;
@@ -37,18 +36,17 @@ namespace IdentityAdmin.Host
             {
                 var factory = new IdentityAdminServiceFactory
                 {
-                    IdentityAdminService = new Registration<IIdentityAdminService, InMemoryIdentityManagerService>(),
+                    ClientService = new Registration<IClientService, InMemoryClientService>(),
                     IdentityResourceService = new Registration<IIdentityResourceService, InMemoryIdentityResourceService>(),
                     ApiResourceService = new Registration<IApiResourceService, InMemoryApiResourceService>()
+
                 };
                 var rand = new System.Random();
                 var clients = ClientSeeder.Get(rand.Next(1000, 3000));
-                var scopes = ScopeSeeder.Get(rand.Next(15));
 
                 var identityResources = IdentityResourceSeeder.Get(rand.Next(25));
                 var apiResources = ApiResourceSeeder.Get(rand.Next(54));
 
-                factory.Register(new Registration<ICollection<InMemoryScope>>(scopes));
                 factory.Register(new Registration<ICollection<InMemoryClient>>(clients));
                 factory.Register(new Registration<ICollection<InMemoryIdentityResource>>(identityResources));
                 factory.Register(new Registration<ICollection<InMemoryApiResource>>(apiResources));

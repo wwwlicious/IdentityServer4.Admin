@@ -21,7 +21,6 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using IdentityAdmin.Api.Filters;
 using IdentityAdmin.Api.Models.Client;
-using IdentityAdmin.Api.Models.Scope;
 using IdentityAdmin.Core;
 using IdentityAdmin.Core.Metadata;
 using IdentityAdmin.Extensions;
@@ -35,13 +34,19 @@ namespace IdentityAdmin.Api.Controllers
     [RoutePrefix(Constants.MetadataRoutePrefix)]
     public class MetaController : ApiController
     {
-        private readonly IIdentityAdminService _identityAdminService;
+        private readonly IClientService _clientService;
+        private readonly IIdentityResourceService _identityResourceService;
+        private readonly IApiResourceService _apiResourceService;
 
-        public MetaController(IIdentityAdminService identityAdminService)
+        public MetaController(IClientService clientService, IIdentityResourceService identityResourceService, IApiResourceService apiResourceService)
         {
-            if (identityAdminService == null) throw new ArgumentNullException("identityAdminService");
+            if (clientService == null) throw new ArgumentNullException(nameof(clientService));
+            if (identityResourceService == null) throw new ArgumentNullException(nameof(identityResourceService));
+            if (apiResourceService == null) throw new ArgumentNullException(nameof(apiResourceService));
 
-            this._identityAdminService = identityAdminService;
+            _clientService = clientService;
+            _identityResourceService = identityResourceService;
+            _apiResourceService = apiResourceService;
         }
 
         private IdentityAdminMetadata _metadata;
@@ -50,7 +55,20 @@ namespace IdentityAdmin.Api.Controllers
         {
             if (_metadata == null)
             {
-                _metadata = await this._identityAdminService.GetMetadataAsync();
+                var clientMetadata = await _clientService.GetMetadataAsync();
+                var identityResourceMetaData = await _identityResourceService.GetMetadataAsync();
+                var apiResourceMetaData = await _apiResourceService.GetMetadataAsync();
+
+                if (clientMetadata == null) throw new InvalidOperationException("Client GetMetadataAsync returned null");
+                if (identityResourceMetaData == null) throw new InvalidOperationException("Identity Resource GetMetadataAsync returned null");
+                if (apiResourceMetaData == null) throw new InvalidOperationException("Api Resource GetMetadataAsync returned null");
+
+                _metadata = new IdentityAdminMetadata
+                {
+                    ClientMetaData = clientMetadata,
+                    IdentityResourceMetaData = identityResourceMetaData,
+                    ApiResourceMetaData = apiResourceMetaData
+                };
                 if (_metadata == null) throw new InvalidOperationException("GetMetadataAsync returned null");
                 _metadata.Validate();
             }
@@ -77,12 +95,6 @@ namespace IdentityAdmin.Api.Controllers
             if (coreMeta.ClientMetaData.SupportsCreate)
             {
                 links["createClient"] = new CreateClientLink(Url, coreMeta.ClientMetaData);
-            }
-
-            links["scopes"] = Url.RelativeLink(Constants.RouteNames.GetScopes);
-            if (coreMeta.ScopeMetaData.SupportsCreate)
-            {
-                links["createScope"] = new CreateScopeLink(Url, coreMeta.ScopeMetaData);
             }
 
             links["identityresources"] = Url.RelativeLink(Constants.RouteNames.GetIdentityResources);

@@ -18,7 +18,6 @@
     <file>/Assets/Scripts/App/ttidAdm.js</file>
     <file>/Assets/Scripts/App/ttidAdmUI.js</file>
     <file>/Assets/Scripts/App/ttidAdmClients.js</file>
-    <file>/Assets/Scripts/App/ttidAdmScopes.js</file>
     <file>/Assets/Scripts/App/ttidAdmApiResources.js</file>
     <file>/Assets/Scripts/App/ttidAdmIdentityResources.js</file>
     <file>/Assets/Scripts/App/ttidAdmApp.js</file>    

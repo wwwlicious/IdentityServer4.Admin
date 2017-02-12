@@ -11,19 +11,19 @@ namespace Core.Tests.Api
 {
     public class WebApiTestBase
     {
-        protected FakeIdentityAdmin IdentityAdminImpl;
+        protected FakeClientService ClientServiceImpl;
         protected TestServer Server;
         protected HttpClient Client;
 
         [TestInitialize]
         public void Init()
         {
-            IdentityAdminImpl = new FakeIdentityAdmin();
+            ClientServiceImpl = new FakeClientService();
             Server = TestServer.Create(adminApp =>
             {
                 var factory = new IdentityAdminServiceFactory
-                {
-                    IdentityAdminService = new Registration<IIdentityAdminService>(IdentityAdminImpl.Object)
+                {                    
+                    ClientService = new Registration<IClientService>(ClientServiceImpl.Object)
                 };
                 adminApp.UseIdentityAdmin(new IdentityAdminOptions(true)
                 {
@@ -51,7 +51,7 @@ namespace Core.Tests.Api
             {
                 clients[i] = new ClientSummary { Subject = i.ToString() , ClientName = string.Format("name{0}", i) , ClientId = string.Format("id{0}", i)};
             }
-            IdentityAdminImpl.SetupQueryClientsAsync(new QueryResult<ClientSummary> { Items = clients });
+            ClientServiceImpl.SetupQueryClientsAsync(new QueryResult<ClientSummary> { Items = clients });
         }
 
         protected HttpResponseMessage Get(string path)

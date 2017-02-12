@@ -123,11 +123,9 @@
     <Compile Include="InMemoryService\InMemoryApiResource.cs" />
     <Compile Include="InMemoryService\InMemoryApiResourceService.cs" />
     <Compile Include="InMemoryService\InMemoryClient.cs" />
-    <Compile Include="InMemoryService\InMemoryIdentityManagerService.cs" />
+    <Compile Include="InMemoryService\InMemoryClientService.cs" />
     <Compile Include="InMemoryService\InMemoryIdentityResource.cs" />
     <Compile Include="InMemoryService\InMemoryIdentityResourceService.cs" />
-    <Compile Include="InMemoryService\InMemoryScope.cs" />
-    <Compile Include="InMemoryService\ScopeSeeder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>

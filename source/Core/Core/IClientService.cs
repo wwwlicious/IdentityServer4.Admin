@@ -1,27 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using IdentityAdmin.Core.Client;
-using IdentityAdmin.Core.Metadata;
-using IdentityAdmin.Core.Scope;
-
-namespace IdentityAdmin.Core
+﻿namespace IdentityAdmin.Core
 {
-    public interface IIdentityAdminService
+    using Client;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+
+    public interface IClientService
     {
-        Task<IdentityAdminMetadata> GetMetadataAsync();
-        Task<IdentityAdminResult<ScopeDetail>> GetScopeAsync(string subject);
-        Task<IdentityAdminResult<QueryResult<ScopeSummary>>> QueryScopesAsync(string filter, int start, int count);
-        Task<IdentityAdminResult<CreateResult>> CreateScopeAsync(IEnumerable<PropertyValue> properties);
-        Task<IdentityAdminResult> SetScopePropertyAsync(string subject, string type, string value);
-        Task<IdentityAdminResult> DeleteScopeAsync(string subject);
-        Task<IdentityAdminResult> AddScopeSecretAsync(string subject, string type, string value, string description, DateTime? expiration);
-        Task<IdentityAdminResult> UpdateScopeSecret(string subject, string scopeSecretSubject, string type, string value, string description, DateTime? expiration);
-        Task<IdentityAdminResult> RemoveScopeSecretAsync(string subject, string id);
-        Task<IdentityAdminResult> AddScopeClaimAsync(string subject, string name, string description,bool alwaysIncludeInIdToken);
-        Task<IdentityAdminResult> RemoveScopeClaimAsync(string subject, string id);
-        Task<IdentityAdminResult> UpdateScopeClaim(string subject, string scopeClaimSubject, string name,string description, bool alwaysIncludeInIdToken);
-        Task<IdentityAdminResult<ClientDetail>> GetClientAsync(string subject);       
+        Task<ClientMetaData> GetMetadataAsync();
+        Task<IdentityAdminResult<ClientDetail>> GetClientAsync(string subject);
         Task<IdentityAdminResult> DeleteClientAsync(string subject);
         Task<IdentityAdminResult> AddClientClaimAsync(string subject, string type, string value);
         Task<IdentityAdminResult> RemoveClientClaimAsync(string subject, string id);

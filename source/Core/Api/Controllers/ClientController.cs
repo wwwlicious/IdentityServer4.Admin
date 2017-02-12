@@ -35,11 +35,11 @@ namespace IdentityAdmin.Api.Controllers
     [NoCache]
     public class ClientController : ApiController
     {
-        readonly IIdentityAdminService _identityAdminService;
-        public ClientController(IIdentityAdminService identityAdminService)
+        readonly IClientService _clientService;
+        public ClientController(IClientService clientService)
         {
-            if (identityAdminService == null) throw new ArgumentNullException("identityAdminService");
-            _identityAdminService = identityAdminService;
+            if (clientService == null) throw new ArgumentNullException(nameof(clientService));
+            _clientService = clientService;
         }
 
         public IHttpActionResult BadRequest<T>(T data)
@@ -57,22 +57,20 @@ namespace IdentityAdmin.Api.Controllers
             return StatusCode(HttpStatusCode.MethodNotAllowed);
         }
 
-        IdentityAdminMetadata _adminMetadata;
+        ClientMetaData _clientMetadata;
         
-        async Task<IdentityAdminMetadata> GetCoreMetaDataAsync()
+        async Task<ClientMetaData> GetCoreMetaDataAsync()
         {
-            if (_adminMetadata == null)
+            if (_clientMetadata == null)
             {
-                _adminMetadata = await _identityAdminService.GetMetadataAsync();
-                if (_adminMetadata == null) throw new InvalidOperationException("coreMetaData returned null");
-                var clientMetadata = _adminMetadata.ClientMetaData;
-                if (clientMetadata == null) throw new InvalidOperationException("ClientMetaData returned null");
-                clientMetadata.Validate();
+                _clientMetadata = await _clientService.GetMetadataAsync();
+                if (_clientMetadata == null) throw new InvalidOperationException("coreMetaData returned null");
+                _clientMetadata.Validate();
 
-                return _adminMetadata;
+                return _clientMetadata;
             }
 
-            return _adminMetadata;
+            return _clientMetadata;
         }
 
         #region Client
@@ -80,11 +78,11 @@ namespace IdentityAdmin.Api.Controllers
         [HttpGet, Route("", Name = Constants.RouteNames.GetClients)]
         public async Task<IHttpActionResult> GetClientsAsync(string filter = null, int start = 0, int count = 100)
         {
-            var result = await _identityAdminService.QueryClientsAsync(filter, start, count);
+            var result = await _clientService.QueryClientsAsync(filter, start, count);
             if (result.IsSuccess)
             {
                 var meta = await GetCoreMetaDataAsync();
-                var resource = new ClientQueryResultResource(result.Result, Url, meta.ClientMetaData);
+                var resource = new ClientQueryResultResource(result.Result, Url, _clientMetadata);
                 return Ok(resource);
             }
 
@@ -105,7 +103,7 @@ namespace IdentityAdmin.Api.Controllers
                 return BadRequest(ModelState.ToError());
             }
 
-            var result = await _identityAdminService.GetClientAsync(subject);
+            var result = await _clientService.GetClientAsync(subject);
             if (result.IsSuccess)
             {
                 if (result.Result == null)
@@ -124,7 +122,7 @@ namespace IdentityAdmin.Api.Controllers
         public async Task<IHttpActionResult> CreateClientAsync(PropertyValue[] properties)
         {
             var coreMetadata = await GetCoreMetaDataAsync();
-            if (!coreMetadata.ClientMetaData.SupportsCreate)
+            if (!coreMetadata.SupportsCreate)
             {
                 return MethodNotAllowed();
             }
@@ -133,7 +131,7 @@ namespace IdentityAdmin.Api.Controllers
                 ModelState.AddModelError("", Messages.ClientDataRequired);
             }
 
-            var errors = ValidateCreateProperties(coreMetadata.ClientMetaData, properties);
+            var errors = ValidateCreateProperties(coreMetadata, properties);
             foreach (var error in errors)
             {
                 ModelState.AddModelError("", error);
@@ -141,7 +139,7 @@ namespace IdentityAdmin.Api.Controllers
 
             if (ModelState.IsValid)
             {
-                var result = await _identityAdminService.CreateClientAsync(properties);
+                var result = await _clientService.CreateClientAsync(properties);
                 if (result.IsSuccess)
                 {
                     var url = Url.RelativeLink(Constants.RouteNames.GetClient, new { subject = result.Result.Subject });
@@ -163,7 +161,7 @@ namespace IdentityAdmin.Api.Controllers
         public async Task<IHttpActionResult> DeleteClientAsync(string subject)
         {
             var meta = await GetCoreMetaDataAsync();
-            if (!meta.ClientMetaData.SupportsDelete)
+            if (!meta.SupportsDelete)
             {
                 return MethodNotAllowed();
             }
@@ -179,7 +177,7 @@ namespace IdentityAdmin.Api.Controllers
                 return BadRequest(ModelState.ToError());
             }
 
-            var result = await _identityAdminService.DeleteClientAsync(subject);
+            var result = await _clientService.DeleteClientAsync(subject);
             if (result.IsSuccess)
             {
                 return NoContent();
@@ -201,11 +199,11 @@ namespace IdentityAdmin.Api.Controllers
 
             string value = await Request.Content.ReadAsStringAsync();
             var meta = await GetCoreMetaDataAsync();
-            ValidateUpdateProperty(meta.ClientMetaData, type, value);
+            ValidateUpdateProperty(meta, type, value);
 
             if (ModelState.IsValid)
             {
-                var result = await _identityAdminService.SetClientPropertyAsync(subject, type, value);
+                var result = await _clientService.SetClientPropertyAsync(subject, type, value);
                 if (result.IsSuccess)
                 {
                     return NoContent();
@@ -235,7 +233,7 @@ namespace IdentityAdmin.Api.Controllers
 
             if (ModelState.IsValid)
             {
-                var result = await _identityAdminService.AddClientClaimAsync(subject, model.Type, model.Value);
+                var result = await _clientService.AddClientClaimAsync(subject, model.Type, model.Value);
                 if (result.IsSuccess)
                 {
                     return NoContent();
@@ -260,7 +258,7 @@ namespace IdentityAdmin.Api.Controllers
             }
             if (ModelState.IsValid)
             {
-                var result = await _identityAdminService.RemoveClientClaimAsync(subject, id);
+                var result = await _clientService.RemoveClientClaimAsync(subject, id);
                 if (result.IsSuccess)
                 {
                     return NoContent();
@@ -291,7 +289,7 @@ namespace IdentityAdmin.Api.Controllers
 
             if (ModelState.IsValid)
             {
-                var result = await _identityAdminService.AddClientSecretAsync(subject, model.Type, model.Value);
+                var result = await _clientService.AddClientSecretAsync(subject, model.Type, model.Value);
                 if (result.IsSuccess)
                 {
                     return NoContent();
@@ -311,7 +309,7 @@ namespace IdentityAdmin.Api.Controllers
             {
                 return NotFound();
             }
-            var result = await _identityAdminService.RemoveClientSecretAsync(subject, id);
+            var result = await _clientService.RemoveClientSecretAsync(subject, id);
             if (result.IsSuccess)
             {
                 return NoContent();
@@ -340,7 +338,7 @@ namespace IdentityAdmin.Api.Controllers
 
             if (ModelState.IsValid)
             {
-                var result = await _identityAdminService.AddClientIdPRestrictionAsync(subject, model.Provider);
+                var result = await _clientService.AddClientIdPRestrictionAsync(subject, model.Provider);
                 if (result.IsSuccess)
                 {
                     return NoContent();
@@ -359,7 +357,7 @@ namespace IdentityAdmin.Api.Controllers
             {
                 return NotFound();
             }
-            var result = await _identityAdminService.RemoveClientIdPRestrictionAsync(subject, id);
+            var result = await _clientService.RemoveClientIdPRestrictionAsync(subject, id);
             if (result.IsSuccess)
             {
                 return NoContent();
@@ -388,7 +386,7 @@ namespace IdentityAdmin.Api.Controllers
 
             if (ModelState.IsValid)
             {
-                var result = await _identityAdminService.AddPostLogoutRedirectUriAsync(subject, model.Uri);
+                var result = await _clientService.AddPostLogoutRedirectUriAsync(subject, model.Uri);
                 if (result.IsSuccess)
                 {
                     return NoContent();
@@ -407,7 +405,7 @@ namespace IdentityAdmin.Api.Controllers
             {
                 return NotFound();
             }
-            var result = await _identityAdminService.RemovePostLogoutRedirectUriAsync(subject, id);
+            var result = await _clientService.RemovePostLogoutRedirectUriAsync(subject, id);
             if (result.IsSuccess)
             {
                 return NoContent();
@@ -436,7 +434,7 @@ namespace IdentityAdmin.Api.Controllers
 
             if (ModelState.IsValid)
             {
-                var result = await _identityAdminService.AddClientRedirectUriAsync(subject, model.Uri);
+                var result = await _clientService.AddClientRedirectUriAsync(subject, model.Uri);
                 if (result.IsSuccess)
                 {
                     return NoContent();
@@ -455,7 +453,7 @@ namespace IdentityAdmin.Api.Controllers
             {
                 return NotFound();
             }
-            var result = await _identityAdminService.RemoveClientRedirectUriAsync(subject, id);
+            var result = await _clientService.RemoveClientRedirectUriAsync(subject, id);
             if (result.IsSuccess)
             {
                 return NoContent();
@@ -483,7 +481,7 @@ namespace IdentityAdmin.Api.Controllers
 
             if (ModelState.IsValid)
             {
-                var result = await _identityAdminService.AddClientCorsOriginAsync(subject, model.Origin);
+                var result = await _clientService.AddClientCorsOriginAsync(subject, model.Origin);
                 if (result.IsSuccess)
                 {
                     return NoContent();
@@ -502,7 +500,7 @@ namespace IdentityAdmin.Api.Controllers
             {
                 return NotFound();
             }
-            var result = await _identityAdminService.RemoveClientCorsOriginAsync(subject, id);
+            var result = await _clientService.RemoveClientCorsOriginAsync(subject, id);
             if (result.IsSuccess)
             {
                 return NoContent();
@@ -530,7 +528,7 @@ namespace IdentityAdmin.Api.Controllers
 
             if (ModelState.IsValid)
             {
-                var result = await _identityAdminService.AddClientCustomGrantTypeAsync(subject, model.GrantType);
+                var result = await _clientService.AddClientCustomGrantTypeAsync(subject, model.GrantType);
                 if (result.IsSuccess)
                 {
                     return NoContent();
@@ -549,7 +547,7 @@ namespace IdentityAdmin.Api.Controllers
             {
                 return NotFound();
             }
-            var result = await _identityAdminService.RemoveClientCustomGrantTypeAsync(subject, id);
+            var result = await _clientService.RemoveClientCustomGrantTypeAsync(subject, id);
             if (result.IsSuccess)
             {
                 return NoContent();
@@ -576,7 +574,7 @@ namespace IdentityAdmin.Api.Controllers
 
             if (ModelState.IsValid)
             {
-                var result = await _identityAdminService.AddClientScopeAsync(subject, model.Scope);
+                var result = await _clientService.AddClientScopeAsync(subject, model.Scope);
                 if (result.IsSuccess)
                 {
                     return NoContent();
@@ -595,7 +593,7 @@ namespace IdentityAdmin.Api.Controllers
             {
                 return NotFound();
             }
-            var result = await _identityAdminService.RemoveClientScopeAsync(subject, id);
+            var result = await _clientService.RemoveClientScopeAsync(subject, id);
             if (result.IsSuccess)
             {
                 return NoContent();

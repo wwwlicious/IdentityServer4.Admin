@@ -22,25 +22,19 @@ using AutoMapper;
 using IdentityAdmin.Core;
 using IdentityAdmin.Core.Client;
 using IdentityAdmin.Core.Metadata;
-using IdentityAdmin.Core.Scope;
 using IdentityAdmin.Extensions;
 using Thinktecture.IdentityServer.Core.Models;
 
 namespace IdentityAdmin.Host.InMemoryService
 {
-    using Core.ApiResource;
-    using Core.IdentityResource;
-
-    internal class InMemoryIdentityManagerService : IIdentityAdminService
+    internal class InMemoryClientService : IClientService
     {
-        private ICollection<InMemoryClient> _clients;
-        private ICollection<InMemoryScope> _scopes;
+        private ICollection<InMemoryClient> _clients;        
         public static MapperConfiguration Config;
         public static IMapper Mapper;
-        public InMemoryIdentityManagerService(ICollection<InMemoryScope> scopes, ICollection<InMemoryClient> clients)
+        public InMemoryClientService(ICollection<InMemoryClient> clients)
         {
             this._clients = clients;
-            this._scopes = scopes;
             Config = new MapperConfiguration(cfg => {
                 cfg.CreateMap<InMemoryClientClaim, ClientClaimValue>();
                 cfg.CreateMap<ClientClaimValue, InMemoryClientClaim>();
@@ -58,20 +52,14 @@ namespace IdentityAdmin.Host.InMemoryService
                 cfg.CreateMap<ClientCustomGrantTypeValue, InMemoryClientCustomGrantType>();
                 cfg.CreateMap<InMemoryClientScope, ClientScopeValue>();
                 cfg.CreateMap<ClientScopeValue, InMemoryClientScope>();
-                cfg.CreateMap<InMemoryScopeClaim, ScopeClaimValue>();
-                cfg.CreateMap<ScopeClaimValue, InMemoryScopeClaim>();
-                cfg.CreateMap<InMemoryScopeSecret, ScopeSecretValue>();
-                cfg.CreateMap<ScopeSecretValue, InMemoryScopeSecret>();
-                cfg.CreateMap<InMemoryScope, Scope>();
-                cfg.CreateMap<Scope, InMemoryScope>();
             });
             Mapper = Config.CreateMapper();
         }
 
 
-        private IdentityAdminMetadata _metadata;
+        private ClientMetaData _metadata;
 
-        private IdentityAdminMetadata GetMetadata()
+        private ClientMetaData GetMetadata()
         {
             if (_metadata == null)
             {
@@ -84,369 +72,16 @@ namespace IdentityAdmin.Host.InMemoryService
                     PropertyMetadata.FromProperty<InMemoryClient>(x => x.ClientId, "ClientId", required: true),
                 };
 
-                var client = new ClientMetaData
+                _metadata = new ClientMetaData
                 {
                     SupportsCreate = true,
                     SupportsDelete = true,
                     CreateProperties = createClient,
                     UpdateProperties = updateClient
                 };
-
-
-                var updateScope = new List<PropertyMetadata>();
-                updateScope.AddRange(PropertyMetadata.FromType<InMemoryScope>());
-
-                var createScope = new List<PropertyMetadata>
-                {
-                    PropertyMetadata.FromProperty<InMemoryScope>(x => x.Name, "ScopeName", required: true),
-                };
-
-                var scope = new ScopeMetaData
-                {
-                    SupportsCreate = true,
-                    SupportsDelete = true,
-                    CreateProperties = createScope,
-                    UpdateProperties = updateScope
-                };
-
-                var updateIdentityResource = new List<PropertyMetadata>();
-                updateIdentityResource.AddRange(PropertyMetadata.FromType<InMemoryIdentityResource>());
-
-                var createIdentityResource = new List<PropertyMetadata>
-                {
-                    PropertyMetadata.FromProperty<InMemoryIdentityResource>(x => x.Name, "IdentityResourceName", required: true)
-                };
-
-                var identityResource = new IdentityResourceMetaData
-                {
-                    SupportsCreate = true,
-                    SupportsDelete = true,
-                    CreateProperties = createIdentityResource,
-                    UpdateProperties = updateIdentityResource
-                };
-
-
-                var updateApiResource = new List<PropertyMetadata>();
-                updateApiResource.AddRange(PropertyMetadata.FromType<InMemoryApiResource>());
-
-                var createApiResource = new List<PropertyMetadata>
-                {
-                    PropertyMetadata.FromProperty<InMemoryApiResource>(x => x.Name, "ApiResourceName", required: true),
-                };
-
-                var apiResource = new ApiResourceMetaData
-                {
-                    SupportsCreate = true,
-                    SupportsDelete = true,
-                    CreateProperties = createApiResource,
-                    UpdateProperties = updateApiResource
-                };
-
-                _metadata = new IdentityAdminMetadata
-                {
-                    ClientMetaData = client,
-                    ScopeMetaData = scope,
-                    IdentityResourceMetaData = identityResource,
-                    ApiResourceMetaData = apiResource
-                };
             }
             return _metadata;
         }
-
-        #region scopes
-
-        public Task<IdentityAdminResult<ScopeDetail>> GetScopeAsync(string subject)
-        {
-            int parsedId;
-            if (int.TryParse(subject, out parsedId))
-            {
-                var inMemoryScope = _scopes.FirstOrDefault(p => p.Id == parsedId);
-                if (inMemoryScope == null)
-                {
-                    return Task.FromResult(new IdentityAdminResult<ScopeDetail>((ScopeDetail) null));
-                }
-            
-                var result = new ScopeDetail
-                {
-                    Subject = subject,
-                    Name = inMemoryScope.Name,
-                    Description = inMemoryScope.Description,
-                };
-
-                var metadata = GetMetadata();
-                var props = from prop in metadata.ScopeMetaData.UpdateProperties
-                    select new PropertyValue
-                    {
-                        Type = prop.Type,
-                        Value = GetScopeProperty(prop, inMemoryScope),
-                    };
-
-                result.Properties = props.ToArray();
-                var scopeClaimValues = new List<ScopeClaimValue>();
-                Mapper.Map(inMemoryScope.ScopeClaims.ToList(), scopeClaimValues);
-                result.ScopeClaimValues = scopeClaimValues;
-                var scopeSecretValues = new List<ScopeSecretValue>();
-                Mapper.Map(inMemoryScope.ScopeSecrets.ToList(), scopeSecretValues);
-                result.ScopeSecretValues = scopeSecretValues;
-                return Task.FromResult(new IdentityAdminResult<ScopeDetail>(result));
-            }
-            return Task.FromResult(new IdentityAdminResult<ScopeDetail>((ScopeDetail) null));
-        }
-
-        public Task<IdentityAdminResult<QueryResult<ScopeSummary>>> QueryScopesAsync(string filter, int start, int count)
-        {
-            var query = from scope in _scopes orderby scope.Name select scope;
-
-            if (!String.IsNullOrWhiteSpace(filter))
-            {
-                query =
-                    from scope in query
-                    where scope.Name.Contains(filter)
-                    orderby scope.Name
-                    select scope;
-            }
-
-            int total = query.Count();
-            var scopes = query.Skip(start).Take(count).ToArray();
-
-            var result = new QueryResult<ScopeSummary>
-            {
-                Start = start,
-                Count = count,
-                Total = total,
-                Filter = filter,
-                Items = scopes.Select(x =>
-                {
-                    var scope = new ScopeSummary
-                    {
-                        Subject = x.Id.ToString(),
-                        Name = x.Name,
-                        Description = x.Name
-                    };
-
-                    return scope;
-                }).ToArray()
-            };
-
-            return Task.FromResult(new IdentityAdminResult<QueryResult<ScopeSummary>>(result));
-        }
-
-        public Task<IdentityAdminResult<CreateResult>> CreateScopeAsync(IEnumerable<PropertyValue> properties)
-        {
-            var errors = ValidateRoleProperties(properties);
-            if (errors.Any())
-            {
-                return Task.FromResult(new IdentityAdminResult<CreateResult>(errors.ToArray()));
-            }
-
-            var scope = new InMemoryScope();
-            var createPropsMeta = GetMetadata().ScopeMetaData.CreateProperties;
-            foreach (var prop in properties)
-            {
-                var result = SetScopeProperty(createPropsMeta, scope, prop.Type, prop.Value);
-                if (!result.IsSuccess)
-                {
-                    return Task.FromResult(new IdentityAdminResult<CreateResult>(result.Errors.ToArray()));
-                }
-            }
-
-            if (_scopes.Any(x => x.Name.Equals(scope.Name, StringComparison.OrdinalIgnoreCase)))
-            {
-                return Task.FromResult(new IdentityAdminResult<CreateResult>("Role name already in use."));
-            }
-
-            _scopes.Add(scope);
-
-            return
-                Task.FromResult(new IdentityAdminResult<CreateResult>(new CreateResult {Subject = scope.Id.ToString()}));
-        }
-
-        public Task<IdentityAdminResult> SetScopePropertyAsync(string subject, string type, string value)
-        {
-            int parsedSubject;
-            if (int.TryParse(subject, out parsedSubject))
-            {
-                var inMemoryScope = _scopes.FirstOrDefault(p => p.Id == parsedSubject);
-                if (inMemoryScope == null)
-                {
-                    return Task.FromResult(new IdentityAdminResult("Invalid subject"));
-                }
-                var meta = GetMetadata();
-
-                SetScopeProperty(meta.ScopeMetaData.UpdateProperties, inMemoryScope, type, value);
-
-
-                return Task.FromResult(IdentityAdminResult.Success);
-            }
-            return Task.FromResult(new IdentityAdminResult("Invalid subject"));
-        }
-
-        public Task<IdentityAdminResult> DeleteScopeAsync(string subject)
-        {
-            int parsedSubject;
-            if (int.TryParse(subject, out parsedSubject))
-            {
-                var inMemoryScope = _scopes.FirstOrDefault(p => p.Id == parsedSubject);
-                if (inMemoryScope == null)
-                {
-                    return Task.FromResult(new IdentityAdminResult("Invalid subject"));
-                }
-                _scopes.Remove(inMemoryScope);
-                return Task.FromResult(IdentityAdminResult.Success);
-            }
-
-            return Task.FromResult(new IdentityAdminResult("Invalid subject"));
-        }
-
-        public Task<IdentityAdminResult> AddScopeClaimAsync(string subject, string name, string description,bool alwaysIncludeInIdToken)
-        {
-            int parsedSubject;
-            if (int.TryParse(subject, out parsedSubject))
-            {
-                var inMemoryScope = _scopes.FirstOrDefault(p => p.Id == parsedSubject);
-                if (inMemoryScope == null)
-                {
-                    return Task.FromResult(new IdentityAdminResult("Invalid subject"));
-                }
-                var existingClaims = inMemoryScope.ScopeClaims;
-                if (!existingClaims.Any(x => x.Name == name && x.Description == description))
-                {
-                    inMemoryScope.ScopeClaims.Add(new InMemoryScopeClaim
-                    {
-                        Id = inMemoryScope.ScopeClaims.Count + 1,
-                        Name = name,
-                        Description = description,
-                        AlwaysIncludeInIdToken = alwaysIncludeInIdToken
-                    });
-                }
-                return Task.FromResult(IdentityAdminResult.Success);
-            }
-
-            return Task.FromResult(new IdentityAdminResult("Invalid subject"));
-        }
-
-        public Task<IdentityAdminResult> UpdateScopeClaim(string subject, string scopeClaimSubject, string name, string description, bool alwaysIncludeInIdToken)
-        {
-            int parsedSubject, parsedScopeClaimSubject;
-            if (int.TryParse(subject, out parsedSubject) && int.TryParse(scopeClaimSubject, out parsedScopeClaimSubject))
-            {
-                var inMemoryScope = _scopes.FirstOrDefault(p => p.Id == parsedSubject);
-                if (inMemoryScope == null)
-                {
-                    return Task.FromResult(new IdentityAdminResult("Invalid subject"));
-                }
-                var existingClaim = inMemoryScope.ScopeClaims.FirstOrDefault(p => p.Id == parsedScopeClaimSubject);
-                if (existingClaim != null)
-                {
-                    existingClaim.AlwaysIncludeInIdToken = alwaysIncludeInIdToken;
-                    return Task.FromResult(IdentityAdminResult.Success);
-                }
-                return Task.FromResult(new IdentityAdminResult("Not found"));
-            }
-
-            return Task.FromResult(new IdentityAdminResult("Invalid subject"));
-        }
-
-        public Task<IdentityAdminResult> RemoveScopeClaimAsync(string subject, string id)
-        {
-            int parsedSubject;
-            int parsedScopeId;
-            if (int.TryParse(subject, out parsedSubject) && int.TryParse(id, out parsedScopeId))
-            {
-                var scope = _scopes.FirstOrDefault(p => p.Id == parsedSubject);
-                if (scope == null)
-                {
-                    return Task.FromResult(new IdentityAdminResult("Invalid subject"));
-                }
-                var existingClaim = scope.ScopeClaims.FirstOrDefault(p => p.Id == parsedScopeId);
-                if (existingClaim != null)
-                {
-                    scope.ScopeClaims.Remove(existingClaim);
-                }
-                return Task.FromResult(IdentityAdminResult.Success);
-            }
-            return Task.FromResult(new IdentityAdminResult("Invalid subject"));
-        }
-
-        public Task<IdentityAdminResult> AddScopeSecretAsync(string subject, string type, string value, string description, DateTime? expiration)
-        {
-            int parsedSubject;
-            if (int.TryParse(subject, out parsedSubject))
-            {
-                var inMemoryScope = _scopes.FirstOrDefault(p => p.Id == parsedSubject);
-                if (inMemoryScope == null)
-                {
-                    return Task.FromResult(new IdentityAdminResult("Invalid subject"));
-                }
-                var existingSecrets = inMemoryScope.ScopeSecrets;
-                if (!existingSecrets.Any(x => x.Type == type && x.Value == value))
-                {
-                    inMemoryScope.ScopeSecrets.Add(new InMemoryScopeSecret
-                    {
-                        Id = inMemoryScope.ScopeSecrets.Count + 1,
-                        Type = type,
-                        Value = value,
-                        Description = description,
-                        Expiration = expiration
-                    });
-                }
-                return Task.FromResult(IdentityAdminResult.Success);
-            }
-
-            return Task.FromResult(new IdentityAdminResult("Invalid subject"));
-        }
-
-        public Task<IdentityAdminResult> UpdateScopeSecret(string subject, string scopeSecretSubject, string type, string value, string description, DateTime? expiration)
-          {
-            int parsedSubject, parsedScopeSecretSubject;
-            if (int.TryParse(subject, out parsedSubject) && int.TryParse(scopeSecretSubject, out parsedScopeSecretSubject))
-            {
-                var inMemoryScope = _scopes.FirstOrDefault(p => p.Id == parsedSubject);
-                if (inMemoryScope == null)
-                {
-                    return Task.FromResult(new IdentityAdminResult("Invalid subject"));
-                }
-                var existingSecret = inMemoryScope.ScopeSecrets.FirstOrDefault(p => p.Id == parsedScopeSecretSubject);
-                if (existingSecret != null)
-                {
-                    existingSecret.Value = value;
-                    existingSecret.Type = type;
-                    existingSecret.Description = description;
-                    if (expiration.HasValue)
-                    {
-                        //Save as new DateTimeOffset(expiration.Value)
-                        existingSecret.Expiration = expiration.Value;
-                    }
-                  
-                    return Task.FromResult(IdentityAdminResult.Success);
-                }
-                return Task.FromResult(new IdentityAdminResult("Not found"));
-            }
-
-            return Task.FromResult(new IdentityAdminResult("Invalid subject"));
-        }
-
-        public Task<IdentityAdminResult> RemoveScopeSecretAsync(string subject, string id)
-        {
-            int parsedSubject;
-            int parsedScopeId;
-            if (int.TryParse(subject, out parsedSubject) && int.TryParse(id, out parsedScopeId))
-            {
-                var scope = _scopes.FirstOrDefault(p => p.Id == parsedSubject);
-                if (scope == null)
-                {
-                    return Task.FromResult(new IdentityAdminResult("Invalid subject"));
-                }
-                var existingSecret = scope.ScopeSecrets.FirstOrDefault(p => p.Id == parsedScopeId);
-                if (existingSecret != null)
-                {
-                    scope.ScopeSecrets.Remove(existingSecret);
-                }
-                return Task.FromResult(IdentityAdminResult.Success);
-            }
-            return Task.FromResult(new IdentityAdminResult("Invalid subject"));
-        }
-        #endregion
 
         #region Clients
 
@@ -485,7 +120,7 @@ namespace IdentityAdmin.Host.InMemoryService
                 Mapper.Map(inMemoryClient.RedirectUris.ToList(), result.RedirectUris);
 
                 var metadata = GetMetadata();
-                var props = from prop in metadata.ClientMetaData.UpdateProperties
+                var props = from prop in metadata.UpdateProperties
                     select new PropertyValue
                     {
                         Type = prop.Type,
@@ -567,7 +202,7 @@ namespace IdentityAdmin.Host.InMemoryService
             var otherProperties = properties.Where(x => !exclude.Contains(x.Type)).ToArray();
 
             var metadata = GetMetadata();
-            var createProps = metadata.ClientMetaData.CreateProperties;
+            var createProps = metadata.CreateProperties;
             var client  = new Client();
             var inMemoryClient = new InMemoryClient
             {
@@ -609,7 +244,7 @@ namespace IdentityAdmin.Host.InMemoryService
                 }
                 var meta = GetMetadata();
 
-                SetClientProperty(meta.ClientMetaData.UpdateProperties, inMemoryClient, type, value);
+                SetClientProperty(meta.UpdateProperties, inMemoryClient, type, value);
                 return Task.FromResult(IdentityAdminResult.Success);
             }
             return Task.FromResult(new IdentityAdminResult("Invalid subject"));
@@ -1007,7 +642,7 @@ namespace IdentityAdmin.Host.InMemoryService
 
         #endregion
 
-        Task<IdentityAdminMetadata> IIdentityAdminService.GetMetadataAsync()
+        public Task<ClientMetaData> GetMetadataAsync()
         {
             return Task.FromResult(GetMetadata());
         }
@@ -1030,28 +665,6 @@ namespace IdentityAdmin.Host.InMemoryService
         {
             string val;
             if (propMetadata.TryGet(client, out val))
-            {
-                return val;
-            }
-            throw new Exception("Invalid property type " + propMetadata.Type);
-        }
-
-        protected IdentityAdminResult SetScopeProperty(IEnumerable<PropertyMetadata> propsMeta, InMemoryScope scope,
-            string type, string value)
-        {
-            IdentityAdminResult result;
-            if (propsMeta.TrySet(scope, type, value, out result))
-            {
-                return result;
-            }
-
-            throw new Exception("Invalid property type " + type);
-        }
-
-        protected string GetScopeProperty(PropertyMetadata propMetadata, InMemoryScope scope)
-        {
-            string val;
-            if (propMetadata.TryGet(scope, out val))
             {
                 return val;
             }

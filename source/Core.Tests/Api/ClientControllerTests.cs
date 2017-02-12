@@ -19,14 +19,14 @@ namespace Core.Tests.Api
         public void GetClientsAsync_NoParams_CallsIdentityAdmin()
         {
             Get("api/Clients");
-            IdentityAdminImpl.VerifyQueryClientsAsync();
+            ClientServiceImpl.VerifyQueryClientsAsync();
         }
 
         [TestMethod]
         public void GetClientsAsync_WithParams_PassesParamsToIdentityAdmin()
         {
             Get("api/Clients?filter=foo&start=7&count=25");
-            IdentityAdminImpl.VerifyQueryClientsAsync("foo", 7, 25);
+            ClientServiceImpl.VerifyQueryClientsAsync("foo", 7, 25);
         }
 
         [TestMethod]
@@ -40,7 +40,7 @@ namespace Core.Tests.Api
         [TestMethod]
         public void GetClientsAsync_IdentityAdminFails_ReturnsErrors()
         {
-            IdentityAdminImpl.SetupQueryClientsAsync("foo", "bar", "baz");
+            ClientServiceImpl.SetupQueryClientsAsync("foo", "bar", "baz");
 
             var response = Get("api/Clients");
 
@@ -56,7 +56,7 @@ namespace Core.Tests.Api
         [TestMethod]
         public void GetClientsAsync_IdentityAdminThrows_ReturnsErrors()
         {
-            IdentityAdminImpl.SetupQueryClientsAsync(new Exception("Boom"));
+            ClientServiceImpl.SetupQueryClientsAsync(new Exception("Boom"));
             var response = Get("api/Clients");
             Assert.AreEqual(HttpStatusCode.InternalServerError, response.StatusCode);
         }
@@ -64,20 +64,20 @@ namespace Core.Tests.Api
         [TestMethod]
         public void CreateClientAsync_ValidModel_CallsIdentityAdmin()
         {
-            IdentityAdminImpl.SetupCreateClientAsync(new CreateResult { Subject = "123" });
+            ClientServiceImpl.SetupCreateClientAsync(new CreateResult { Subject = "123" });
             var propertyValues = new List<PropertyValue>
             {
                 new PropertyValue {Type = "ClientName", Value = "testName"},
                 new PropertyValue {Type = "ClientId", Value = "testId"}
             };
             Post("api/Clients", propertyValues);
-            IdentityAdminImpl.VerifyCreateClientAsync();
+            ClientServiceImpl.VerifyCreateClientAsync();
         }
 
         [TestMethod]
         public void CreateClientAsync_IdentityAdminReturnsSuccess_CorrectResults()
         {
-            IdentityAdminImpl.SetupCreateClientAsync(new CreateResult { Subject = "123" });
+            ClientServiceImpl.SetupCreateClientAsync(new CreateResult { Subject = "123" });
             var propertyValues = new List<PropertyValue>
             {
                 new PropertyValue {Type = "ClientName", Value = "testName"},
@@ -105,7 +105,7 @@ namespace Core.Tests.Api
             Post("api/Clients", propertyValuesNoName);
             Post("api/Clients", propertyValuesNoId);
             Post("api/Clients", (IEnumerable<PropertyValue>)null);
-            IdentityAdminImpl.VerifyCreateClientAsyncNotCalled();
+            ClientServiceImpl.VerifyCreateClientAsyncNotCalled();
         }
 
         [TestMethod]
@@ -134,7 +134,7 @@ namespace Core.Tests.Api
         [TestMethod]
         public void CreateClientAsync_IdentityAdminReturnsErrors_ReturnsErrors()
         {
-            IdentityAdminImpl.SetupCreateClientAsync("foo", "bar");
+            ClientServiceImpl.SetupCreateClientAsync("foo", "bar");
                  var propertyValuesNoName = new List<PropertyValue>
             {
                 new PropertyValue {Type = "ClientName", Value = "testName"},
@@ -151,7 +151,7 @@ namespace Core.Tests.Api
         [TestMethod]
         public void CreateClientAsync_IdentityAdminThrows_ReturnsErrors()
         {
-            IdentityAdminImpl.SetupCreateClientAsync(new Exception("Boom"));
+            ClientServiceImpl.SetupCreateClientAsync(new Exception("Boom"));
             var propertyValuesNoName = new List<PropertyValue>
             {
                 new PropertyValue {Type = "ClientName", Value = "testName"},
@@ -165,13 +165,13 @@ namespace Core.Tests.Api
         public void GetClientAsync_CallsIdentityAdmin()
         {
             Get("api/Clients/123");
-            IdentityAdminImpl.VerifyGetClientAsync("123");
+            ClientServiceImpl.VerifyGetClientAsync("123");
         }
 
         [TestMethod]
         public void GetClientAsync_ClientNotFound_ReturnsNotFound()
         {
-            IdentityAdminImpl.SetupGetClientAsync((ClientDetail)null);
+            ClientServiceImpl.SetupGetClientAsync((ClientDetail)null);
             var resp = Get("api/Clients/123");
             Assert.AreEqual(HttpStatusCode.NotFound, resp.StatusCode);
         }
@@ -179,7 +179,7 @@ namespace Core.Tests.Api
         [TestMethod]
         public void GetClientAsync_IdentityAdminReturnsErrors_ReturnsErrors()
         {
-            IdentityAdminImpl.SetupGetClientAsync("foo", "bar");
+            ClientServiceImpl.SetupGetClientAsync("foo", "bar");
             var response = Get("api/Clients/123");
             Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
             var error = response.Content.ReadAsAsync<ErrorModel>().Result;
@@ -192,7 +192,7 @@ namespace Core.Tests.Api
         [TestMethod]
         public void GetClientAsync_IdentityAdminThrows_ReturnsErrors()
         {
-            IdentityAdminImpl.SetupGetClientAsync(new Exception("Boom"));
+            ClientServiceImpl.SetupGetClientAsync(new Exception("Boom"));
             var response = Get("api/Clients/123");
             Assert.AreEqual(HttpStatusCode.InternalServerError, response.StatusCode);
         }
@@ -210,7 +210,7 @@ namespace Core.Tests.Api
         public void DeleteClientAsync_CallsIdentityAdmin()
         {
             Delete("api/Clients/123");
-            IdentityAdminImpl.VerifyDeleteClientAsync("123");
+            ClientServiceImpl.VerifyDeleteClientAsync("123");
         }
         [TestMethod]
         public void DeleteClientAsync_IdentityAdminReturnsSuccess_ReturnsNoContent()
@@ -222,7 +222,7 @@ namespace Core.Tests.Api
         [TestMethod]
         public void DeleteClientAsync_IdentityAdminReturnsError_ReturnsError()
         {
-            IdentityAdminImpl.SetupDeleteClientAsync("foo", "bar");
+            ClientServiceImpl.SetupDeleteClientAsync("foo", "bar");
             var resp = Delete("api/Clients/123");
             Assert.AreEqual(HttpStatusCode.BadRequest, resp.StatusCode);
             var error = resp.Content.ReadAsAsync<ErrorModel>().Result;
@@ -234,7 +234,7 @@ namespace Core.Tests.Api
         [TestMethod]
         public void DeleteClientAsync_IdentityAdminThrows_ReturnsErrors()
         {
-            IdentityAdminImpl.SetupDeleteClientAsync(new Exception("Boom"));
+            ClientServiceImpl.SetupDeleteClientAsync(new Exception("Boom"));
             var response = Delete("api/Clients/123");
             Assert.AreEqual(HttpStatusCode.InternalServerError, response.StatusCode);
         }
@@ -252,7 +252,7 @@ namespace Core.Tests.Api
         public void AddClaimAsync_CallsIdentityAdmin()
         {
             Post("api/Clients/123/claim", new ClientClaimValue { Type = "color", Value = "blue" });
-            IdentityAdminImpl.VerifyAddClaimAsync("123", "color", "blue");
+            ClientServiceImpl.VerifyAddClaimAsync("123", "color", "blue");
         }
         [TestMethod]
         public void AddClaimAsync_IdentityAdminReturnsSuccess_ReturnsNoContent()
@@ -263,7 +263,7 @@ namespace Core.Tests.Api
         [TestMethod]
         public void AddClaimAsync_IdentityAdminReturnsError_ReturnsError()
         {
-            IdentityAdminImpl.SetupAddClaimAsync("foo", "bar");
+            ClientServiceImpl.SetupAddClaimAsync("foo", "bar");
             var resp = Post("api/Clients/123/claim", new ClientClaimValue { Type = "color", Value = "blue" });
             Assert.AreEqual(HttpStatusCode.BadRequest, resp.StatusCode);
             var error = resp.Content.ReadAsAsync<ErrorModel>().Result;
@@ -274,7 +274,7 @@ namespace Core.Tests.Api
         [TestMethod]
         public void AddClaimAsync_IdentityAdminThrows_ReturnsErrors()
         {
-            IdentityAdminImpl.SetupAddClaimAsync(new Exception("Boom"));
+            ClientServiceImpl.SetupAddClaimAsync(new Exception("Boom"));
             var resp = Post("api/Clients/123/claim", new ClientClaimValue { Type = "color", Value = "blue" });
             Assert.AreEqual(HttpStatusCode.InternalServerError, resp.StatusCode);
         }
@@ -285,7 +285,7 @@ namespace Core.Tests.Api
             Post("api/Clients/123/claim", new ClientClaimValue { Type = "color", Value = "" });
             Post("api/Clients/ /claim", new ClientClaimValue { Type = "color", Value = "blue" });
             Post("api/Clients/123/claim", (ClientClaimValue)null);
-            IdentityAdminImpl.VerifyAddClaimAsyncNotCalled();
+            ClientServiceImpl.VerifyAddClaimAsyncNotCalled();
         }
         [TestMethod]
         public void AddClaimAsync_MissingModel_ReturnsError()
@@ -326,7 +326,7 @@ namespace Core.Tests.Api
         public void RemoveClaimAsync_CallsIdentityAdmin()
         {
             Delete("api/Clients/123/claim/123");
-            IdentityAdminImpl.VerifyRemoveClaimAsync("123", "123");
+            ClientServiceImpl.VerifyRemoveClaimAsync("123", "123");
         }
 
         [TestMethod]
@@ -339,7 +339,7 @@ namespace Core.Tests.Api
         [TestMethod]
         public void RemoveClaimAsync_IdentityAdminReturnsError_ReturnsError()
         {
-            IdentityAdminImpl.SetupRemoveClaimAsync("foo", "bar");
+            ClientServiceImpl.SetupRemoveClaimAsync("foo", "bar");
             var resp = Delete("api/Clients/123/claim/123");
             Assert.AreEqual(HttpStatusCode.BadRequest, resp.StatusCode);
             var error = resp.Content.ReadAsAsync<ErrorModel>().Result;
@@ -351,7 +351,7 @@ namespace Core.Tests.Api
         [TestMethod]
         public void RemoveClaimAsync_IdentityAdminThrows_ReturnsErrors()
         {
-            IdentityAdminImpl.SetupRemoveClaimAsync(new Exception("Boom"));
+            ClientServiceImpl.SetupRemoveClaimAsync(new Exception("Boom"));
             var resp = Delete("api/Clients/123/claim/123");
             Assert.AreEqual(HttpStatusCode.InternalServerError, resp.StatusCode);
         }
@@ -362,7 +362,7 @@ namespace Core.Tests.Api
             Delete("api/Clients/ /claims/color/blue");
             Delete("api/Clients/123/claims/ /blue");
             Delete("api/Clients/123/claims/color/ ");
-            IdentityAdminImpl.VerifyRemoveClaimAsyncNotCalled();
+            ClientServiceImpl.VerifyRemoveClaimAsyncNotCalled();
         }
 
        

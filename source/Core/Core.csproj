@@ -123,7 +123,6 @@
     <Compile Include="Api\Controllers\IdentityResourceController.cs" />
     <Compile Include="Api\Controllers\MetaController.cs" />
     <Compile Include="Api\Controllers\AdminPageController.cs" />
-    <Compile Include="Api\Controllers\ScopeController.cs" />
     <Compile Include="Api\Filters\NoCacheAttribute.cs" />
     <Compile Include="Api\Filters\SecurityHeadersAttribute.cs" />
     <Compile Include="Api\Models\ApiResource\ApiResourceDetailDataResource.cs" />
@@ -147,6 +146,7 @@
     <Compile Include="Core\ApiResource\ApiResourceScopeClaimValue.cs" />
     <Compile Include="Core\ApiResource\ApiResourceScopeValue.cs" />
     <Compile Include="Core\ApiResource\ApiResourceSecretValue.cs" />
+    <Compile Include="Core\IClientService.cs" />
     <Compile Include="Core\IdentityResource\BaseIdentityResourceValue.cs" />
     <Compile Include="Core\ApiResource\BaseApiResourceValue.cs" />
     <Compile Include="Core\IdentityResource\IdentityResourceClaimValue.cs" />
@@ -154,12 +154,6 @@
     <Compile Include="Api\Models\IdentityResource\IdentityResourceQueryResultResource.cs" />
     <Compile Include="Api\Models\IdentityResource\IdentityResourceQueryResultResourceData.cs" />
     <Compile Include="Api\Models\IdentityResource\IdentityResourceResultResource.cs" />
-    <Compile Include="Api\Models\Scope\CreateScopeLink.cs" />
-    <Compile Include="Api\Models\Scope\ScopeDetailDataResource.cs" />
-    <Compile Include="Api\Models\Scope\ScopeDetailResource.cs" />
-    <Compile Include="Api\Models\Scope\ScopeQueryResultResource.cs" />
-    <Compile Include="Api\Models\Scope\ScopeQueryResultResourceData.cs" />
-    <Compile Include="Api\Models\Scope\ScopeResultResource.cs" />
     <Compile Include="App_Packages\LibLog.1.4\LibLog.cs" />
     <Compile Include="Assets\AssetManager.cs" />
     <Compile Include="Assets\EmbeddedHtmlResult.cs" />
@@ -207,7 +201,6 @@
     <Compile Include="Core\IdentityManagerResult`1.cs" />
     <Compile Include="Core\IdentityResource\IdentityResourceMetaData.cs" />
     <Compile Include="Core\IdentityResource\IdentityResourceSummary.cs" />
-    <Compile Include="Core\IIdentityAdminService.cs" />
     <Compile Include="Core\IIdentityResourceService.cs" />
     <Compile Include="Core\Metadata\ExecutablePropertyMetadata.cs" />
     <Compile Include="Core\Metadata\ExpressionPropertyMetadata.cs" />
@@ -218,12 +211,6 @@
     <Compile Include="Core\OwinEnvironmentService.cs" />
     <Compile Include="Core\PropertyValue.cs" />
     <Compile Include="Core\QueryResult.cs" />
-    <Compile Include="Core\Scope\BaseScopeValue.cs" />
-    <Compile Include="Core\Scope\ScopeClaimValue.cs" />
-    <Compile Include="Core\Scope\ScopeDetail.cs" />
-    <Compile Include="Core\Scope\ScopeMetaData.cs" />
-    <Compile Include="Core\Scope\ScopeSecret.cs" />
-    <Compile Include="Core\Scope\ScopeSummary.cs" />
     <Compile Include="Extensions\ClaimsExtensions.cs" />
     <Compile Include="Extensions\IdentityAdminResultExtensions.cs" />
     <Compile Include="Extensions\ModelStateDictionaryExtensions.cs" />
@@ -287,7 +274,6 @@
     <Content Include="Assets\Scripts\App\ttidAdm.js" />
     <Content Include="Assets\Scripts\App\ttidAdmApp.js" />
     <Content Include="Assets\Scripts\App\ttidAdmClients.js" />
-    <Content Include="Assets\Scripts\App\ttidAdmScopes.js" />
     <Content Include="Assets\Scripts\App\ttidAdmUI.js" />
     <EmbeddedResource Include="Assets\Scripts\Bundle.js">
       <DependentUpon>Bundle.js.bundle</DependentUpon>
@@ -311,9 +297,6 @@
     <EmbeddedResource Include="Assets\Templates\navbar.html" />
     <EmbeddedResource Include="Assets\Templates\pager\buttons.html" />
     <EmbeddedResource Include="Assets\Templates\pager\summary.html" />
-    <EmbeddedResource Include="Assets\Templates\scopes\edit.html" />
-    <EmbeddedResource Include="Assets\Templates\scopes\list.html" />
-    <EmbeddedResource Include="Assets\Templates\scopes\new.html" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

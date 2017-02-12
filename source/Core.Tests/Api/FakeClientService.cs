@@ -5,57 +5,37 @@ using System.Threading.Tasks;
 using IdentityAdmin.Core;
 using IdentityAdmin.Core.Client;
 using IdentityAdmin.Core.Metadata;
-using IdentityAdmin.Core.Scope;
-
 
 namespace Core.Tests.Api
 {
-    public class FakeIdentityAdmin : Mock<IIdentityAdminService>
+    public class FakeClientService : Mock<IClientService>
     {
-        public FakeIdentityAdmin()
+        public FakeClientService()
         {
             SetReturnsDefault(Task.FromResult(new IdentityAdminResult()));
             SetReturnsDefault(Task.FromResult(new IdentityAdminResult<QueryResult<ClientSummary>>(new QueryResult<ClientSummary>())));
             SetReturnsDefault(Task.FromResult(new IdentityAdminResult<CreateResult>(new CreateResult())));
             SetReturnsDefault(Task.FromResult(new IdentityAdminResult<ClientSummary>(new ClientSummary())));
 
-            SetupGetMetadataAsync(new IdentityAdminMetadata
+            SetupGetMetadataAsync(new ClientMetaData
             {
-                ClientMetaData = new ClientMetaData
+                SupportsCreate = true,
+                SupportsDelete = true,
+                CreateProperties = new List<PropertyMetadata>
                 {
-                    SupportsCreate = true,
-                    SupportsDelete = true,
-                    CreateProperties = new List<PropertyMetadata>
+                    new PropertyMetadata
                     {
-                        new PropertyMetadata
-                        {
-                            Type = "ClientId",
-                            Name = "ClientId",  
-                            DataType = PropertyDataType.String,
-                            Required =  true
-                        },new PropertyMetadata
-                        {
-                            Type = "ClientName",
-                            Name = "ClientName",  
-                            DataType = PropertyDataType.String,
-                            Required =  true
-                        }
-                    }
-
-                },
-                ScopeMetaData = new ScopeMetaData
-                {
-                    SupportsDelete =  true,
-                    SupportsCreate = true,
-                    CreateProperties = new List<PropertyMetadata>
+                        Type = "ClientId",
+                        Name = "ClientId",
+                        DataType = PropertyDataType.String,
+                        Required = true
+                    },
+                    new PropertyMetadata
                     {
-                        new PropertyMetadata
-                        {
-                            Type = "Name",
-                            Name = "Name",  
-                            DataType = PropertyDataType.String,
-                            Required =  true
-                        }
+                        Type = "ClientName",
+                        Name = "ClientName",
+                        DataType = PropertyDataType.String,
+                        Required = true
                     }
                 }
             });
@@ -189,7 +169,7 @@ namespace Core.Tests.Api
         {
             Verify(x => x.GetMetadataAsync());
         }
-        internal void SetupGetMetadataAsync(IdentityAdminMetadata data)
+        internal void SetupGetMetadataAsync(ClientMetaData data)
         {
              Setup(x => x.GetMetadataAsync())
                 .Returns(Task.FromResult(data));

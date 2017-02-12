@@ -45,7 +45,7 @@ namespace IdentityAdmin.Configuration
             _registrations.Add(registration);
         }
 
-        public Registration<IIdentityAdminService> IdentityAdminService { get; set; }
+        public Registration<IClientService> ClientService { get; set; }
 
         public Registration<IIdentityResourceService> IdentityResourceService { get; set; }
 

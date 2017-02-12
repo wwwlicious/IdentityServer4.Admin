@@ -90,7 +90,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Api\FakeIdentityAdmin.cs" />
+    <Compile Include="Api\FakeClientService.cs" />
     <Compile Include="Api\MetadataControllerTests.cs" />
     <Compile Include="Api\ClientControllerTests.cs" />
     <Compile Include="Api\WebApiTestBase.cs" />

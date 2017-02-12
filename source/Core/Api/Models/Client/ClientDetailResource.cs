@@ -25,7 +25,7 @@ namespace IdentityAdmin.Api.Models.Client
 {
     public class ClientDetailResource
     {
-        public ClientDetailResource(ClientDetail client, UrlHelper url, IdentityAdminMetadata idmAdminMeta)
+        public ClientDetailResource(ClientDetail client, UrlHelper url, ClientMetaData idmAdminMeta)
         {
             if (client == null) throw new ArgumentNullException("client");
             if (url == null) throw new ArgumentNullException("url");
@@ -34,7 +34,7 @@ namespace IdentityAdmin.Api.Models.Client
             Data = new ClientDetailDataResource(client, url, idmAdminMeta);
 
             var links = new Dictionary<string, string>();
-            if (idmAdminMeta.ClientMetaData.SupportsDelete)
+            if (idmAdminMeta.SupportsDelete)
             {
                 links["Delete"] = url.RelativeLink(Constants.RouteNames.DeleteClient, new {subject = client.Subject});
             }
