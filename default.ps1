@@ -3,9 +3,9 @@ properties {
 	$src_directory = "$base_directory\source"
 	$output_directory = "$base_directory\build"
 	$dist_directory = "$base_directory\distribution"
-	$sln_file = "$src_directory\IdentityServer3.Admin.sln"
+	$sln_file = "$src_directory\IdentityServer4.Admin.sln"
 	$target_config = "Release"
-	$framework_version = "v4.5"
+	$framework_version = "v4.5.2"
 	$xunit_path = "$src_directory\packages\xunit.runners.1.9.2\tools\xunit.console.clr4.exe"
 	$ilmerge_path = "$src_directory\packages\ilmerge.2.14.1208\tools\ILMerge.exe"
 	$nuget_path = "$src_directory\.nuget\nuget.exe"
@@ -16,16 +16,16 @@ properties {
 }
 
 task default -depends Clean, CreateNuGetPackage
-task appVeyor -depends Clean, CreateNuGetPackage
+#task appVeyor -depends Clean, CreateNuGetPackage
 
 task Clean {
 	rmdir $output_directory -ea SilentlyContinue -recurse
 	rmdir $dist_directory -ea SilentlyContinue -recurse
-	exec { msbuild /nologo /verbosity:quiet $sln_file /p:Configuration=$target_config /t:Clean }
+	# exec { msbuild /nologo /verbosity:quiet $sln_file /p:Configuration=$target_config /t:Clean }
 }
 
 task Compile -depends UpdateVersion {
-		exec { msbuild /nologo /verbosity:q $sln_file /p:Configuration=$target_config /p:TargetFrameworkVersion=v4.5 }
+		exec { msbuild /nologo /verbosity:q $sln_file /p:Configuration=$target_config /p:TargetFrameworkVersion=v4.5.2 }
 
 	if ($LastExitCode -ne 0) {
         exit $LastExitCode
@@ -63,7 +63,7 @@ task ILMerge -depends Compile {
 	}
 
 	New-Item $dist_directory\lib\net45 -Type Directory
-	Invoke-Expression "$ilmerge_path /targetplatform:v4 /internalize /allowDup /target:library /out:$dist_directory\lib\net45\IdentityServer3.Admin.dll $input_dlls"
+	Invoke-Expression "$ilmerge_path /targetplatform:v4 /internalize /allowDup /target:library /out:$dist_directory\lib\net45\IdentityServer4.Admin.dll $input_dlls"
 }
 
 task CreateNuGetPackage -depends ILMerge {

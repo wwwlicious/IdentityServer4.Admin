@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
     <metadata>
-        <id>IdentityServer3.Admin</id>
+        <id>IdentityServer4.Admin</id>
         <version>1.0.0-beta9</version>
-        <title>IdentityServer3.Admin</title>
+        <title>IdentityServer4.Admin</title>
         <authors>hoorn_000</authors>
         <owners>Bert Hoorne,Brock Allen,Dominick Baier</owners>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>

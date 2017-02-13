@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <package >
   <metadata>
-    <id>IdentityServer3.Admin</id>
+    <id>IdentityServer4.Admin</id>
     <version>1.0.0-beta9</version>
-    <title>IdentityServer3.Admin</title>
+    <title>IdentityServer4.Admin</title>
     <authors>Brock Allen, Dominick Baier, Bert Hoorne</authors>
     <owners>Brock Allen, Dominick Baier, Bert Hoorne</owners>
-    <projectUrl>https://github.com/IdentityServer/IdentityServer3.Admin</projectUrl>
+    <projectUrl>https://github.com/MacLeanElectrical/IdentityServer4.Admin</projectUrl>
 	<iconUrl>https://identityserver.github.io/Documentation/assets/images/icons/IDserver_icon128.jpg</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>IdentityAdmin is a tool for developers and/or administrators to manage the clients and scopes of their applications. This includes creating clients/scopes, editing client/scopes and deleting clients/scopes.</description>
