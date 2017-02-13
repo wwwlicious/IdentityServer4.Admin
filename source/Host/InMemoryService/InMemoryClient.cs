@@ -16,7 +16,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using Thinktecture.IdentityServer.Core.Models;
 
 namespace IdentityAdmin.Host.InMemoryService

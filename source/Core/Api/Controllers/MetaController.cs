@@ -20,16 +20,15 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web.Http;
 using IdentityAdmin.Api.Filters;
+using IdentityAdmin.Api.Models.ApiResource;
 using IdentityAdmin.Api.Models.Client;
+using IdentityAdmin.Api.Models.IdentityResource;
 using IdentityAdmin.Core;
 using IdentityAdmin.Core.Metadata;
 using IdentityAdmin.Extensions;
 
 namespace IdentityAdmin.Api.Controllers
 {
-    using Models.ApiResource;
-    using Models.IdentityResource;
-
     [NoCache]
     [RoutePrefix(Constants.MetadataRoutePrefix)]
     public class MetaController : ApiController

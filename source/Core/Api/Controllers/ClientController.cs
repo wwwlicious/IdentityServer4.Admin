@@ -25,7 +25,6 @@ using IdentityAdmin.Api.Filters;
 using IdentityAdmin.Api.Models.Client;
 using IdentityAdmin.Core;
 using IdentityAdmin.Core.Client;
-using IdentityAdmin.Core.Metadata;
 using IdentityAdmin.Extensions;
 using IdentityAdmin.Resources;
 

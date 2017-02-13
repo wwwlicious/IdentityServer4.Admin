@@ -18,8 +18,6 @@ using System;
 
 namespace IdentityAdmin
 {
-    using Newtonsoft.Json.Serialization;
-
     public class Constants
     {
         public const string LocalAuthenticationType = "idAdmin.Local";
@@ -50,7 +48,6 @@ namespace IdentityAdmin
 
         public const string RoutePrefix = "api";
         public const string MetadataRoutePrefix = RoutePrefix + "";
-        public const string ScopeRoutePrefix = RoutePrefix + "/scopes";
         public const string ClientsRoutePrefix = RoutePrefix + "/clients";
         public const string IdentityResourcesRoutePrefix = RoutePrefix + "/identityresources";
         public const string ApiResourcesRoutePrefix = RoutePrefix + "/apiresources";
@@ -79,18 +76,6 @@ namespace IdentityAdmin
             public const string RemoveClientCustomGrantType = "RemoveClientCustomGrantType";
             public const string AddClientScope = "AddClientScope";
             public const string RemoveClientScope = "RemoveClientScope";
-
-            public const string GetScopes = "GetScopes";
-            public const string GetScope = "GetScope";
-            public const string CreateScope = "CreateScope";
-            public const string DeleteScope = "DeleteScope";
-            public const string UpdateScopeProperty = "UpdateScopeProperty";
-            public const string AddScopeClaim = "AddScopeClaim";
-            public const string RemoveScopeClaim = "RemoveScopeClaim";
-            public const string UpdateScopeClaim = "UpdateScopeClaim";
-            public const string AddScopeSecret = "AddScopeSecret";
-            public const string RemoveScopeSecret = "RemoveScopeSecret";
-            public const string UpdateScopeSecret = "UpdateScopeSecret";
 
             public const string GetIdentityResources = "GetIdentityResources";
             public const string GetIdentityResource = "GetIdentityResource";

@@ -18,7 +18,6 @@ using System;
 using System.Collections.Generic;
 using System.Web.Http.Routing;
 using IdentityAdmin.Core.Client;
-using IdentityAdmin.Core.Metadata;
 using IdentityAdmin.Extensions;
 
 namespace IdentityAdmin.Api.Models.Client
